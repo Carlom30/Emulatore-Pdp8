@@ -1,0 +1,5 @@
+TODO
+
+finire funzioni di print per debug/test
+
+creazione enum per istruzioni di macchina. separati però in 3 insiemi di enum, in base ai tipi specificati dal pdp8
