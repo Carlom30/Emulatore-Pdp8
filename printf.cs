@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Emulatore_Pdp8;
+using UtilityStuff;
 
-namespace print
+namespace PrintSpace
 {
     enum Base
     {
@@ -15,27 +16,38 @@ namespace print
     };
 
 
-    class printf
+    class Printf
     {
-        static public void printRam(Base basePrint, i16[] ram)
+
+        static public void printBin(short value, RegType type)
+        {
+            for(int i = 0; i < (int)type; i++)
+            {
+                Console.Write(Utility.isBitSet(value, i) ? 1 : 0);
+            }
+        }
+
+        static public void printRam(i16[] ram)
         {
             for(int i = 0; i < ram.Length; i++)
             {
-                if(basePrint == Base.dec)
-                {
-                    Console.WriteLine(ram[i].getValue());
-                }
-
-                else if(basePrint == Base.bin)
-                {
-                    string toBin = Convert.ToString(ram[i].getValue(), 2);
-                    Console.WriteLine(toBin);
-                }
+                string toBin = Convert.ToString(ram[i].getValue(), 2);
+                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + toBin);
+                printBin(ram[i].getValue(), RegType.bit16_reg);
+                Console.Write("\n");
+                //Console.WriteLine(toBin);
             }
 
             return;
         }
 
-
+        static public void printRegisters(pdp8 vm)
+        {
+            Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Convert.ToString(vm.mbr.getValue(), 2));
+            Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Convert.ToString(vm.a.getValue(), 2));
+            Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Convert.ToString(vm.mar.getValue(), 2));
+            Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Convert.ToString(vm.pc.getValue(), 2));
+            Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0));
+        }
     }
 }

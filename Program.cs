@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using print;
+using PrintSpace;
+using UtilityStuff;
 
 
 namespace Emulatore_Pdp8 //già definito da un'altra parte??
-
 {
+    enum RegType
+    {
+        bit16_reg = 16,
+        bit12_reg = 12
+    }
+
     static class Program
     {
         /// <summary>
@@ -25,8 +31,18 @@ namespace Emulatore_Pdp8 //già definito da un'altra parte??
             //u12 a = new u12((ushort)(Math.Pow(2, 13))); //test per overflow (worked)
 
             pdp8 vm = new pdp8();
-            printf.printRam(Base.bin, vm.ram);
-            
+
+            for (int i = 0; i < vm.ram.Length; i++)
+                vm.ram[i].setValue(0);
+
+            if(Utility.isBitSet(vm.ram[11].getValue(), 0))
+            {
+                Console.WriteLine("ciclo di indirizzamento indiretto\n");
+                vm.r = true;
+            }
+
+            Printf.printRam(vm.ram);
+            Printf.printRegisters(vm);
         }
     }
 
