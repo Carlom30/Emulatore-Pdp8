@@ -8,32 +8,15 @@ using UtilityStuff;
 
 namespace PrintSpace
 {
-    enum Base
-    {
-        bin,
-        dec,
-        hex
-    };
-
-
     class Printf
     {
-
-        static public void printBin(short value, RegType type)
-        {
-            for(int i = 0; i < (int)type; i++)
-            {
-                Console.Write(Utility.isBitSet(value, i) ? 1 : 0);
-            }
-        }
 
         static public void printRam(i16[] ram)
         {
             for(int i = 0; i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + toBin);
-                printBin(ram[i].getValue(), RegType.bit16_reg);
+                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), 0, RegType.bit16_reg));
                 Console.Write("\n");
                 //Console.WriteLine(toBin);
             }

@@ -7,13 +7,49 @@ using PrintSpace;
 using UtilityStuff;
 
 
-namespace Emulatore_Pdp8 //già definito da un'altra parte??
+namespace Emulatore_Pdp8
 {
     enum RegType
     {
         bit16_reg = 16,
         bit12_reg = 12
     }
+
+    enum MRI //memory reference instruction
+    {
+        AND = 0b_000,
+        ADD = 0b_001,
+        LDA = 0b_010,
+        STA = 0b_011,
+        BUN = 0b_100,
+        BSA = 0b_101,
+        ISZ = 0b_110
+    }
+
+    enum RRI //register reference instruction
+    {
+        CLA = 0b_0111_1000_0000_0000,
+        CLE = 0b_0111_0100_0000_0000,
+        CMA = 0b_0111_0010_0000_0000, 
+        CME = 0b_0111_0001_0000_0000, 
+        CIR = 0b_0111_0000_1000_0000, 
+        CIL = 0b_0111_0000_0100_0000, 
+        INC = 0b_0111_0000_0010_0000, 
+        SPA = 0b_0111_0000_0001_0000, 
+        SNA = 0b_0111_0000_0000_1000, 
+        SZA = 0b_0111_0000_0000_0100, 
+        SZE = 0b_0111_0000_0000_0010, 
+        HLT = 0b_0111_0000_0000_0001
+    }
+
+    enum IOI // I/O instruction set
+    {
+        INP = 0b_1111_1000_0000_0000, 
+        OUT = 0b_1111_0100_0000_0000
+    }
+
+
+
 
     static class Program
     {
@@ -33,16 +69,18 @@ namespace Emulatore_Pdp8 //già definito da un'altra parte??
             pdp8 vm = new pdp8();
 
             for (int i = 0; i < vm.ram.Length; i++)
-                vm.ram[i].setValue(0);
+                vm.ram[i].setValue(10);
 
-            if(Utility.isBitSet(vm.ram[11].getValue(), 0))
+            //Console.WriteLine(Utility.valueToBin(8, RegType.bit16_reg));
+
+            /*if(Utility.isBitSet(vm.ram[11].getValue(), 0))
             {
                 Console.WriteLine("ciclo di indirizzamento indiretto\n");
                 vm.r = true;
-            }
+            }*/
 
             Printf.printRam(vm.ram);
-            Printf.printRegisters(vm);
+            //Printf.printRegisters(vm);
         }
     }
 
