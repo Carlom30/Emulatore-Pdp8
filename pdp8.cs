@@ -167,6 +167,17 @@ namespace Emulatore_Pdp8
             return;
         }
 
+        public void fetch()
+        {
+
+            return;
+        }
+
+        public void ADD()
+        {
+            
+            return;
+        }
 
     }
 

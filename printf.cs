@@ -16,7 +16,7 @@ namespace PrintSpace
             for(int i = 0; i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), 0, RegType.bit16_reg));
+                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg));
                 Console.Write("\n");
                 //Console.WriteLine(toBin);
             }
