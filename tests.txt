@@ -1,0 +1,9 @@
+//u12 a = new u12((ushort)(Math.Pow(2, 13))); //test per overflow (worked)
+
+//Console.WriteLine(Utility.valueToBin(8, RegType.bit16_reg));
+
+            /*if(Utility.isBitSet(vm.ram[11].getValue(), 0))
+            {
+                Console.WriteLine("ciclo di indirizzamento indiretto\n");
+                vm.r = true;
+            }*/

@@ -9,11 +9,24 @@ namespace UtilityStuff
 {
     class Utility
     {
-        /*il problema principale con entrambe le funzioni e il type del registro. 
-          non tanto perché uno è da 12 e uno da 16, ma più che altro perché quello da 12 è unsigned(e così deve essere)
-          e quello da 16 è signed (as well) quindi per adesso faccio dei check, ma farò delle ricerche per capire se
-          esiste una soluzione più utile e elegante :))
-          inoltre devo ancora capire quanto è utile migliorare questo codice*/
+        static public ushort setBit(ushort value, int pos, bool bit) //this thing is bugged lmao
+        {
+            int bitValue = bit ? 1 : 0;
+            ushort one = 1;
+            one = (ushort)(one & (1 << pos));
+            if ((value & (1 << pos)) != bitValue)
+            {
+                if(bitValue == 0)
+                    value = (ushort)(value & (~one));
+
+                else
+                    value = (ushort)(value | (one));
+            }
+                //value = (ushort)(~(value & (1 << pos)));
+
+
+            return value;
+        }
 
         static public bool isBitSet(int value, int position)
             => (value & (1 << position)) != 0; //:)

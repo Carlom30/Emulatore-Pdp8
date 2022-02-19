@@ -48,9 +48,6 @@ namespace Emulatore_Pdp8
         OUT = 0b_1111_0100_0000_0000
     }
 
-
-
-
     static class Program
     {
         /// <summary>
@@ -64,23 +61,17 @@ namespace Emulatore_Pdp8
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
 
-            //u12 a = new u12((ushort)(Math.Pow(2, 13))); //test per overflow (worked)
 
             pdp8 vm = new pdp8();
 
-            for (int i = 0; i < vm.ram.Length; i++)
-                vm.ram[i].setValue(10);
+            /*for (int i = 0; i < vm.ram.Length; i++)
+                vm.ram[i].setValue(10);*/
 
-            //Console.WriteLine(Utility.valueToBin(8, RegType.bit16_reg));
-
-            /*if(Utility.isBitSet(vm.ram[11].getValue(), 0))
-            {
-                Console.WriteLine("ciclo di indirizzamento indiretto\n");
-                vm.r = true;
-            }*/
+            vm.ram[0].setValue(unchecked((short)0b_1010_0000_0010_0000));
+            vm.fetch();
 
             Printf.printRam(vm.ram);
-            //Printf.printRegisters(vm);
+            Printf.printRegisters(vm);
         }
     }
 
@@ -131,6 +122,11 @@ namespace Emulatore_Pdp8
             _value = newValue;
         }
 
+        public void increment()
+        {
+            _value++;
+        }
+
     }
 
     class pdp8
@@ -143,6 +139,9 @@ namespace Emulatore_Pdp8
         public u12 mar; //memory address register
         public u12 pc; //program counter
 
+        public byte opr;
+
+        public bool i; //indirizzamento cacca piscio
         public bool e; //registro di riporto per l'accumulatore
 
         //insieme dei flip-flop per tipo di indirizzamento
@@ -159,16 +158,42 @@ namespace Emulatore_Pdp8
             this.mar = new u12(0);
             this.pc = new u12(0);
 
-            e = false;
+            this.opr = 0;
 
-            s = false;
-            f = false;
-            r = false;
+            this.e = false;
+
+            this.s = false;
+            this.f = false;
+            this.r = false;
+            
             return;
         }
 
         public void fetch()
         {
+            mar.setValue(pc.getValue());
+            mbr.setValue(ram[mar.getValue()].getValue());
+            pc.increment();
+
+            Console.WriteLine("andrea dice: ciao!");
+
+            opr = 0;
+            opr = (byte)Utility.setBit(opr, 0, Utility.isBitSet(mbr.getValue(), 12));
+            Console.WriteLine(Utility.isBitSet(mbr.getValue(), 12));
+
+            opr = (byte)Utility.setBit(opr, 1, Utility.isBitSet(mbr.getValue(), 13));
+            Console.WriteLine(Utility.isBitSet(mbr.getValue(), 13));
+
+            opr = (byte)Utility.setBit(opr, 2, Utility.isBitSet(mbr.getValue(), 14));
+            Console.WriteLine(Utility.isBitSet(mbr.getValue(), 14));
+
+            i = Utility.isBitSet(mbr.getValue(), 15); //l'ultima posizione di 16 bit è la quindicesima (15, 1111);
+
+            if (i && opr != 0b_111)
+                r = true; //passa ciclo di indirizzamento indiretto
+
+            else
+                f = true; // passa ciclo di execute
 
             return;
         }
