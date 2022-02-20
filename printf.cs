@@ -10,7 +10,6 @@ namespace PrintSpace
 {
     class Printf
     {
-
         static public void printRam(i16[] ram)
         {
             for(int i = 0; i < ram.Length; i++)
@@ -26,12 +25,12 @@ namespace PrintSpace
 
         static public void printRegisters(pdp8 vm)
         {
-            Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Convert.ToString(vm.mbr.getValue(), 2));
-            Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Convert.ToString(vm.a.getValue(), 2));
-            Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Convert.ToString(vm.mar.getValue(), 2));
-            Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Convert.ToString(vm.pc.getValue(), 2));
+            Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg));
+            Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg));
+            Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg));
+            Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg));
             Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0) + " I: " + (vm.i ? 1 : 0));
-            Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit16_reg));
+            Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit3_reg));
         }
     }
 }

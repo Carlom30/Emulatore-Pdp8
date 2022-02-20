@@ -9,23 +9,27 @@ namespace UtilityStuff
 {
     class Utility
     {
-        static public ushort setBit(ushort value, int pos, bool bit) //this thing is bugged lmao
+        static public ushort setBit(ushort value, int pos, bool bit) //(fixed)
         {
             int bitValue = bit ? 1 : 0;
-            ushort one = 1;
-            one = (ushort)(one & (1 << pos));
-            if ((value & (1 << pos)) != bitValue)
+            //one = (ushort)(one & (1 << pos));
+            /*il bug era la variabile "one", che alla fine dell'operazione sopra risultava essere 
+              0b_0000_0000_0000, quindi inutile per qualunque ops and bit a bit.*/
+            if ((value & (1 << pos)) != bitValue) //prima cosa controllo che il bit che voglio modificare non sia già
+                                                  //come voglio farlo diventare XD
             {
                 if(bitValue == 0)
-                    value = (ushort)(value & (~one));
+                    value = (ushort)(value & (~(1 << pos))); 
+                    /*se il bit che devo settare è 0, allora shifto 1 pos volte e lo complemento, facendo poi
+                      l'and bit a bit tutti i bit di value restano invariati, eccetto il bit pos, che è settato a 0*/
 
                 else
-                    value = (ushort)(value | (one));
+                    value = (ushort)(value | (1 << pos));
+                    /*come prima ma in questo caso farò l'or bit a bit con lo shift di 1 non complementato, così 
+                      facendo, cambio solo il bit pos e lo setto a 1*/
             }
-                //value = (ushort)(~(value & (1 << pos)));
 
-
-            return value;
+            return value; //astruso ma funziona sempre :DD
         }
 
         static public bool isBitSet(int value, int position)
@@ -41,5 +45,6 @@ namespace UtilityStuff
 
             return toBin;
         }
+        
     }
 }
