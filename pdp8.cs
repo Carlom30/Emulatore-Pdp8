@@ -69,9 +69,12 @@ namespace Emulatore_Pdp8
                 vm.ram[i].setValue(10);*/
 
             //di seguito i test fatti con la macchina virtuale
-            vm.ram[0].setValue(unchecked((short)0b_0001_0000_0000_0001)); //ADD riconosciuto da execute()
-            vm.ram[1].setValue(unchecked((short)0b_0000_0000_0000_0101)); //index indicato dall'address di ram[0]
-            vm.a.setValue(unchecked((short)0b_0000_0000_0000_0101)); //setting scripted dell'accumulatore per testing
+            vm.ram[0].setValue(unchecked((short)0b_1001_0000_0000_0001)); //ADD riconosciuto da execute() (con indirizzamnto indiretto)
+            vm.ram[1].setValue(unchecked((short)0b_0000_0000_0000_0010)); //index indicato dall'address di ram[0]
+            vm.ram[2].setValue(unchecked((short)0b_1111_1111_1111_1111)); //valore sommato ad ac dopo indirizzamento indiretto.
+            vm.ram[3].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
+            vm.a.setValue(unchecked((short)0b_1000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
+
 
             vm.run(); //not so much to say
             //vm.addressToMAR();
@@ -151,7 +154,7 @@ namespace Emulatore_Pdp8
         public bool e; //registro di riporto per l'accumulatore
 
         //insieme dei flip-flop per tipo di indirizzamento
-        public bool s;
+        public bool s; //questo registro indica se la macchina è accesa o spenta :)
         public bool f;
         public bool r;
 
@@ -168,7 +171,7 @@ namespace Emulatore_Pdp8
 
             this.e = false;
 
-            this.s = false;
+            this.s = true;
             this.f = false;
             this.r = false;
             
@@ -185,6 +188,8 @@ namespace Emulatore_Pdp8
                 newMAR = Utility.setBit(newMAR, i, Utility.isBitSet(mbr.getValue(), i));
             }
             mar.setValue(newMAR);
+            //newMAR = (ushort)(mbr.getValue() & 0b_0000_1111_1111_1111);
+            //mar.setValue(newMAR);
             //works
         }
 
@@ -238,6 +243,19 @@ namespace Emulatore_Pdp8
                 }
             }
 
+            if(opr == 0b_111 && i == false)
+            {
+                Console.WriteLine("found RRI ops");
+                switch (ram[mar.getValue()].getValue())
+                {
+                    case (short)RRI.HLT:
+                        HLT();
+                        break;
+
+                    break;
+                }
+            }
+
             //altra roba ovviamente, just testing
             return;
         }
@@ -247,10 +265,28 @@ namespace Emulatore_Pdp8
             Console.WriteLine("adding...");
             addressToMAR();
             mbr.setValue(ram[mar.getValue()].getValue());
+
+            short c = (short)(a.getValue() + mbr.getValue());
+            e = ((a.getValue() ^ mbr.getValue()) >= 0) & ((a.getValue() ^ c) < 0); //tested (works)
+
+            /*Cosa accade sopra: 
+              il registro "E" è il riporto della somma tra ac e mbr, nel caso ci sia overflow
+              il registro "E" deve essere settato ad 1, quindi verifico che ci sia overflow, prima di fare la somma.
+              Se lo xor bit a bit tra i due addendi è positivo e lo xor bit a bit tra il primo addendo e la somma tra 
+              i due addendi è minore di zero, allora c'è overflow, quindi l'and bit a bit tra 1 & 1 setta "E" a 1
+              altrimenti a 0 (in quel caso non si ha overflow)
+
+              link: https://stackoverflow.com/questions/32021741/integer-overflow-detection-c-sharp-for-add */
+
             a.setValue((short)(a.getValue() + mbr.getValue()));
 
             f = false;
             return;
+        }
+
+        public void HLT()
+        {
+            s = false; 
         }
 
         public void LDA()
@@ -261,22 +297,22 @@ namespace Emulatore_Pdp8
 
         public void run()
         {
-            Console.WriteLine("fetching...");
-            fetch();
-            if(f == false && r == true)
+            //ovviamente qui va un while
+            while (s)
             {
-                //ciclo di indirizzamento indiretto
-            }
-            
-            if(f == true && r == false)
-            {
-                Console.WriteLine("executing...");
-                execute();
+                Console.WriteLine("fetching...");
+                fetch();
+                if (f == false && r == true)
+                {
+                    indirectAddressing();
+                }
+
+                if (f == true && r == false)
+                {
+                    Console.WriteLine("executing...");
+                    execute();
+                }
             }
         }
-
     }
-
-
-
 }

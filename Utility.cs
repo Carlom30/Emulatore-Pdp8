@@ -45,6 +45,5 @@ namespace UtilityStuff
 
             return toBin;
         }
-        
     }
 }
