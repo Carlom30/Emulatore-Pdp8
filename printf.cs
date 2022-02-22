@@ -32,5 +32,16 @@ namespace PrintSpace
             Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0) + " I: " + (vm.i ? 1 : 0) + " E: " + (vm.e ? 1 : 0));
             Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit3_reg));
         }
+
+        //necessito di una funzione che faccia print dall'i-esimo elemento della ram, al j-esimo
+        static public void printSpecRam(int start, int end, i16[] ram)
+        {
+            for(int i = start; i <= end; i++)
+            {
+                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg));
+                Console.Write("\n");
+            }
+            return;
+        }
     }
 }

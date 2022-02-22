@@ -69,18 +69,23 @@ namespace Emulatore_Pdp8
                 vm.ram[i].setValue(10);*/
 
             //di seguito i test fatti con la macchina virtuale
-            vm.ram[0].setValue(unchecked((short)0b_1001_0000_0000_0001)); //ADD riconosciuto da execute() (con indirizzamnto indiretto)
-            vm.ram[1].setValue(unchecked((short)0b_0000_0000_0000_0010)); //index indicato dall'address di ram[0]
-            vm.ram[2].setValue(unchecked((short)0b_1111_1111_1111_1111)); //valore sommato ad ac dopo indirizzamento indiretto.
-            vm.ram[3].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
-            vm.a.setValue(unchecked((short)0b_1000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
+      
+            vm.ram[0].setValue(unchecked((short)0b_0101_0000_0000_0100)); 
+            vm.ram[1].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT
+            vm.ram[4].setValue(unchecked((short)0b_0000_0000_0000_0000));
+            vm.ram[5].setValue(unchecked((short)0b_0000_0000_0000_0000));
+            vm.ram[6].setValue(unchecked((short)0b_1100_0000_0000_0100)); 
+            //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
+            //vm.a.setValue(unchecked((short)0b_1000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
 
 
             vm.run(); //not so much to say
             //vm.addressToMAR();
 
             Printf.printRegisters(vm);
-            Printf.printRam(vm.ram);
+            Printf.printSpecRam(0, 6, vm.ram);
+
+            //Printf.printRam(vm.ram);
         }
     }
 
@@ -125,7 +130,7 @@ namespace Emulatore_Pdp8
             if(newValue >= (1 << 12))
             {
                 Console.WriteLine("overflow!\n");
-                return; //crash probabilmente
+                return; //crash probabilmente ma tanto non accadrà mai (almeno credo)
             }
 
             _value = newValue;
@@ -193,6 +198,17 @@ namespace Emulatore_Pdp8
             //works
         }
 
+        public u12 getAddressFromMBR()
+        {
+            u12 ad = new u12(0);
+            for (int i = 0; i < (int)RegType.bit12_reg; i++)
+            {
+                ad.setValue(Utility.setBit(ad.getValue(), i, Utility.isBitSet(mbr.getValue(), i)));
+            }
+
+            return ad;
+        }
+
         public void fetch()
         {
             mar.setValue(pc.getValue());
@@ -238,34 +254,83 @@ namespace Emulatore_Pdp8
                 switch (opr)
                 {
                     case (byte)MRI.ADD:
+                        Console.WriteLine(MRI.ADD);
                         ADD();
+                        break;
+
+                    case (byte)MRI.LDA:
+                        Console.WriteLine(MRI.LDA);
+                        LDA();
+                        break;
+
+                    case (byte)MRI.STA:
+                        Console.WriteLine(MRI.STA);
+                        STA();
+                        break;
+
+                    case (byte)MRI.BUN:
+                        Console.WriteLine(MRI.BUN);
+                        BUN();
+                        break;
+
+                    case (byte)MRI.BSA:
+                        Console.WriteLine(MRI.BSA);
+                        BSA();
+                        break;
+
+
+                    default:
+                        Console.WriteLine("is this a label?");
+                        f = false;
+                        r = false;
                         break;
                 }
             }
 
-            if(opr == 0b_111 && i == false)
+            if(opr == 0b_111 && !i)
             {
                 Console.WriteLine("found RRI ops");
                 switch (ram[mar.getValue()].getValue())
                 {
                     case (short)RRI.HLT:
+                        Console.WriteLine("HLT");
                         HLT();
                         break;
 
-                    break;
+                    default:
+                        Console.WriteLine("is this a label?");
+                        f = false;
+                        r = false;
+                        break;
                 }
+
             }
 
+            if(opr == 0b_111 && i)
+            {
+                Console.WriteLine("found I/O ops");
+                switch(ram[mar.getValue()].getValue())
+                {
+                    default:
+                        Console.WriteLine("is this a label?");
+                        f = false;
+                        r = false;
+                        break;
+                }
+            }
             //altra roba ovviamente, just testing
             return;
         }
 
         public void ADD()
         {
-            Console.WriteLine("adding...");
+            Console.WriteLine("MAR <- MBR(AD)");
             addressToMAR();
+
+            Console.WriteLine("MBR <- M");
             mbr.setValue(ram[mar.getValue()].getValue());
 
+            Console.WriteLine("EAC <- AC + MBR");
             short c = (short)(a.getValue() + mbr.getValue());
             e = ((a.getValue() ^ mbr.getValue()) >= 0) & ((a.getValue() ^ c) < 0); //tested (works)
 
@@ -284,15 +349,97 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void HLT()
-        {
-            s = false; 
-        }
-
         public void LDA()
         {
-            Console.WriteLine("loading things from reg to AC");
+            Console.WriteLine("MAR <- MBR(AD)");
+            addressToMAR();
+
+            Console.WriteLine("MBR <- M, AC <- 0");
+            mbr.setValue(ram[mar.getValue()].getValue());
+            a.setValue(0);
+
+            Console.WriteLine("AC <- AC + MBR");
+            a.setValue((short)(a.getValue() + mbr.getValue()));
+
+            f = false;
             return;
+        }
+
+        public void STA()
+        {
+            Console.WriteLine("MAR <- MBR(AD)");
+            addressToMAR();
+
+            Console.WriteLine("MBR <- AC");
+            mbr.setValue(a.getValue());
+
+            Console.WriteLine("M <- MBR");
+            ram[mar.getValue()].setValue(mbr.getValue());
+
+            f = false;
+            return;
+        }
+
+        public void BUN()
+        {
+            Console.WriteLine("PC <- MBR(AD)");
+            pc.setValue(getAddressFromMBR().getValue());
+
+            f = false;
+            return;
+        }
+
+        public void BSA()
+        {
+            //salto con memorizzazione indirizzo di ritorno
+            Console.WriteLine("MAR <- MBR(AD), MBR(AD) <- PC, PC <- MBR(AD)");
+            addressToMAR();
+
+            short tmp = (short)(mbr.getValue() & 0b_1111_0000_0000_0000);
+            tmp = (short)(tmp | (short)pc.getValue());
+
+            /*
+             supponiamo che mbr sia 0b_1001_0000_0000_0001 e pc 0000_0000_1010
+             vogliamo ora quindi cambiare la sua parte address, ovvero i sui 12 bit meno significativi, inserendo al loro posto il pc, invariando però i 4 più significativi.
+             salvando mbr su tmp e facendo and bit a bit con 0b_1111_0000_0000_0000 si ottiene:
+
+             1001_0000_0000_0001 &
+             1111_0000_0000_0000
+            ---------------------
+             1001_0000_0000_0000
+
+             ovvero una variabile con i 4 bit più significativi uguali a mbr e la parte address di 12 bit uguale a 0.
+             a questo punto, siccome pc è di 12 bit, ma salvato in un ushort, quindi 16 bit, (vedi definizione di i12) sicuramente i 4 bit più significativi di pc sono 0000
+             per definizione.
+             quindi facendo or bit a bit tra temp e pc si ottiene 
+
+             1001_0000_0000_0000 |
+             0000_0000_0000_1010
+            ---------------------
+             1001_0000_0000_1010
+
+             che è esattamente mbr con gli stessi 4 bit del principio ma con address diverso. (che è appunto quello che cerchiamo di fare).
+            */
+
+
+            pc.setValue(getAddressFromMBR().getValue());
+            mbr.setValue(tmp);
+
+            Console.WriteLine("M <- MBR");
+            ram[mar.getValue()].setValue(mbr.getValue());
+
+            Console.WriteLine("PC <- PC + 1");
+            pc.increment();
+
+
+            f = false;
+            return;
+        }
+
+        public void HLT()
+        {
+            Console.WriteLine("S <- 0");
+            s = false;
         }
 
         public void run()
@@ -300,16 +447,29 @@ namespace Emulatore_Pdp8
             //ovviamente qui va un while
             while (s)
             {
-                Console.WriteLine("fetching...");
-                fetch();
-                if (f == false && r == true)
+                //Console.WriteLine(pc.getValue());
+
+                /*sussiste un problema da risolvere, anche fetch dovrebbe avere un controllo (if (!f && !r))
+                  che però, se l'istruzione precedente non era un istruzione, ma una label o comunque un valore
+                  allora i due flip flop non verranno mai settati a false e il ciclo continuerà all'infinito senza mai
+                  cambiare istruzione, questo perché i flip-flop vengono cambiati solo nei cicli di I e execute, che
+                  siccome non vengono mai chiamati, i flip-flop non cambieranno mai. per ora su execute controllo
+                  semplicemente se la cella non corrisponde ad alcune istruzioni, se questo è il caso, allora setto
+                  f == false e r == false. questo risolve il problema*/
+
+                Console.WriteLine("Fetch");
+                if(!f && !r)
+                    fetch();
+
+                if (!f && r)
                 {
+                    Console.WriteLine("indirect Addressing");
                     indirectAddressing();
                 }
 
-                if (f == true && r == false)
+                if (f && !r)
                 {
-                    Console.WriteLine("executing...");
+                    Console.WriteLine("execute");
                     execute();
                 }
             }

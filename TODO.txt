@@ -4,8 +4,5 @@ TODO
 
 importante: dare uno sguardo ai generics del C# (link: https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics);
 
-aggiunte funzione di: ADD, execute e run per test pdp8 (it's alive!), i test funzionano ma serve di aggiustare add e i16
-in modo che possano usare il registro e.
-
-idea per sopra: nel caso di overflow di uno short, si può switchare all'utilizzo di un int (signed sempre), e modificare 
-le funzioni di get/set di i16 in modo da garantire il corretto funzionamento i quanto detto.
+implementata funzione BSA ma c'è ancora da capire come comportarsi con il salvataggio di MBR in ram[mar].
+implementare AND
