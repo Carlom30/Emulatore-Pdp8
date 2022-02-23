@@ -47,3 +47,5 @@ namespace UtilityStuff
         }
     }
 }
+
+//unchecked((short)0b_0000_0000_0000_0000)

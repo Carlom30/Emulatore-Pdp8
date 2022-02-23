@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using PrintSpace;
 using UtilityStuff;
+using Assembler;
 
 
 namespace Emulatore_Pdp8
@@ -65,18 +66,14 @@ namespace Emulatore_Pdp8
 
             pdp8 vm = new pdp8();
 
-            /*for (int i = 0; i < vm.ram.Length; i++)
-                vm.ram[i].setValue(10);*/
-
             //di seguito i test fatti con la macchina virtuale
-      
-            vm.ram[0].setValue(unchecked((short)0b_0101_0000_0000_0100)); 
-            vm.ram[1].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT
-            vm.ram[4].setValue(unchecked((short)0b_0000_0000_0000_0000));
-            vm.ram[5].setValue(unchecked((short)0b_0000_0000_0000_0000));
-            vm.ram[6].setValue(unchecked((short)0b_1100_0000_0000_0100)); 
+
+            //vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(2), true);
+            vm.ram[0].setValue(unchecked((short)0b_0111_0010_0000_0000)); //cma
+            vm.ram[1].setValue(unchecked((short)0b_0111_0000_0000_0001));
+            vm.ram[2].setValue(unchecked((short)0b_1111_1111_1111_1111)); 
             //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
-            //vm.a.setValue(unchecked((short)0b_1000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
+            vm.a.setValue(unchecked((short)0b_1111_1111_1111_1111)); //setting scripted dell'accumulatore per testing
 
 
             vm.run(); //not so much to say
@@ -251,8 +248,14 @@ namespace Emulatore_Pdp8
             if (opr != 0b_111)
             {
                 Console.WriteLine("found MRI ops");
+                Console.Write("execute ");
                 switch (opr)
                 {
+                    case (byte)MRI.AND:
+                        Console.WriteLine(MRI.AND);
+                        AND();
+                        break;
+
                     case (byte)MRI.ADD:
                         Console.WriteLine(MRI.ADD);
                         ADD();
@@ -278,6 +281,10 @@ namespace Emulatore_Pdp8
                         BSA();
                         break;
 
+                    case (byte)MRI.ISZ:
+                        Console.WriteLine(MRI.ISZ);
+                        ISZ();
+                        break;
 
                     default:
                         Console.WriteLine("is this a label?");
@@ -290,10 +297,66 @@ namespace Emulatore_Pdp8
             if(opr == 0b_111 && !i)
             {
                 Console.WriteLine("found RRI ops");
+                Console.Write("execute ");
                 switch (ram[mar.getValue()].getValue())
                 {
+                    case (short)RRI.CLA:
+                        Console.WriteLine(RRI.CLA);
+                        CLA();
+                        break;
+
+                    case (short)RRI.CLE:
+                        Console.WriteLine(RRI.CLE);
+                        CLE();
+                        break;
+
+                    case (short)RRI.CMA:
+                        Console.WriteLine(RRI.CMA);
+                        CMA();
+                        break;
+
+                    case (short)RRI.CME:
+                        Console.WriteLine(RRI.CME);
+                        CME();
+                        break;
+
+                    case (short)RRI.CIR:
+                        Console.WriteLine(RRI.CIR);
+                        CIR();
+                        break;
+
+                    case (short)RRI.CIL:
+                        Console.WriteLine(RRI.CIL);
+                        CIL();
+                        break;
+
+                    case (short)RRI.INC:
+                        Console.WriteLine(RRI.INC);
+                        INC();
+                        break;
+
+                    case (short)RRI.SPA:
+                        Console.WriteLine(RRI.SPA);
+                        SPA();
+                        break;
+
+                    case (short)RRI.SNA:
+                        Console.WriteLine(RRI.SNA);
+                        SNA();
+                        break;
+
+                    case (short)RRI.SZA:
+                        Console.WriteLine(RRI.SZA);
+                        SZA();
+                        break;
+
+                    case (short)RRI.SZE:
+                        Console.WriteLine(RRI.SZE);
+                        SZE();
+                        break;
+
                     case (short)RRI.HLT:
-                        Console.WriteLine("HLT");
+                        Console.WriteLine(RRI.HLT);
                         HLT();
                         break;
 
@@ -309,7 +372,8 @@ namespace Emulatore_Pdp8
             if(opr == 0b_111 && i)
             {
                 Console.WriteLine("found I/O ops");
-                switch(ram[mar.getValue()].getValue())
+                Console.Write("execute ");
+                switch (ram[mar.getValue()].getValue())
                 {
                     default:
                         Console.WriteLine("is this a label?");
@@ -322,7 +386,22 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void ADD()
+        public void AND() // AND con AC
+        {
+            Console.WriteLine("MAR <- MBR(AD)");
+            addressToMAR();
+
+            Console.WriteLine("MBR <- M");
+            mbr.setValue(ram[mar.getValue()].getValue());
+
+            Console.WriteLine("AC <- AC & MBR");
+            a.setValue((short)(a.getValue() & mbr.getValue()));
+
+            f = false;
+            return;
+        }
+
+        public void ADD() // ADD con AC
         {
             Console.WriteLine("MAR <- MBR(AD)");
             addressToMAR();
@@ -349,7 +428,7 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void LDA()
+        public void LDA() // carica in AC
         {
             Console.WriteLine("MAR <- MBR(AD)");
             addressToMAR();
@@ -365,7 +444,7 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void STA()
+        public void STA() // memorizza AC
         {
             Console.WriteLine("MAR <- MBR(AD)");
             addressToMAR();
@@ -380,7 +459,7 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void BUN()
+        public void BUN() // salto incondizionato
         {
             Console.WriteLine("PC <- MBR(AD)");
             pc.setValue(getAddressFromMBR().getValue());
@@ -389,12 +468,12 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void BSA()
+        public void BSA() // salto con memorizzazione dell'indirizzo di ritorno
         {
-            //salto con memorizzazione indirizzo di ritorno
             Console.WriteLine("MAR <- MBR(AD), MBR(AD) <- PC, PC <- MBR(AD)");
             addressToMAR();
 
+            //update: Il professor Navarra mi ha informato che la bsa ha come effetto collaterale quello di trasferire oltre al pc anche l'opr
             short tmp = (short)(mbr.getValue() & 0b_1111_0000_0000_0000);
             tmp = (short)(tmp | (short)pc.getValue());
 
@@ -436,6 +515,149 @@ namespace Emulatore_Pdp8
             return;
         }
 
+        public void ISZ() //Incrementa e salta se zero
+        {
+            Console.WriteLine("MAR <- MBR(AD)");
+            addressToMAR();
+
+            Console.WriteLine("MBR <- M");
+            mbr.setValue(ram[mar.getValue()].getValue());
+
+            Console.WriteLine("MBR <- MBR + 1");
+            mbr.setValue((short)(mbr.getValue() + 1));
+
+            Console.WriteLine("M <- MBR");
+            ram[mar.getValue()].setValue(mbr.getValue());
+
+            Console.WriteLine("if (MBR = 0) then (PC <- PC + 1)");
+            if (mbr.getValue() == 0)
+                pc.setValue((ushort)(pc.getValue() + 1)); //salta la prossima istruzione se 0
+
+            f = false;
+            return;
+        }
+
+        //da qui cominciano le RRI (register reference instructions)
+
+        public void CLA()
+        {
+            Console.WriteLine("AC <- 0");
+            a.setValue(0b_0000_0000_0000_0000);
+
+            f = false;
+            return; //XD
+        }
+
+        public void CLE()
+        {
+            Console.WriteLine("E <- 0");
+            e = false;
+
+            f = false;
+            return;
+        }
+
+        public void CMA() //complementa AC (complemento a 1)
+        {
+            Console.WriteLine("AC <- AC'");
+            a.setValue((short)~a.getValue());
+            f = false;
+            return;
+        }
+
+        public void CME() //comeplementa E
+        {
+            Console.WriteLine("E <- E'");
+            e = !e;
+
+            f = false;
+            return;
+        }
+
+        public void CIR() //circulate right E-AC
+        {
+            Console.WriteLine("cir E-AC");
+            bool tmp = Utility.isBitSet(a.getValue(), 0); //salvo il primo bit di ac su tmp
+            short value = a.getValue(); //salvo ac in una variabile per comodità
+            value = (short)(value >> 1); //shifto a destra value
+            value = (short)(Utility.setBit((ushort)value, 15, e)); //a questo punto per "shiftare cicolarmente" anche il registro E l'ultimo bit di value divanta uguale a E
+            
+            e = tmp; //infine per "shiftare circolarmente" anche E, questo diventa uguale tmp, ovvero il primo bit di ac prima dello shift
+            a.setValue(value); //a ovviamente viene cambiato
+
+            f = false;
+            return;
+        }
+
+        public void CIL() //circulate left E-AC
+        {
+            Console.WriteLine("cil E-AC");
+            //la spiegazione è come quella di CIR, ma inversa
+            bool tmp = Utility.isBitSet(a.getValue(), 15);
+            short value = a.getValue();
+            value = (short)(value << 1);
+            value = (short)(Utility.setBit((ushort)value, 0, e));
+
+            e = tmp;
+            a.setValue(value);
+
+            f = false;
+            return;
+
+        }
+
+
+        public void INC()
+        {
+            Console.WriteLine("E-AC <- AC + 1");
+            short c = (short)(a.getValue() + 1);
+            //vedi ADD per spiegazione di e
+            e = ((a.getValue() ^ (short)1) >= 0) & ((a.getValue() ^ c) < 0);
+
+            f = false;
+            return;
+        }
+
+        public void SPA() //skip on positive AC
+        {
+            Console.WriteLine("IF AC(1) = 0 THEN PC <- PC + 1");
+            if (a.getValue() > 0)
+                pc.increment();
+
+            f = false;
+            return;
+        }
+
+        public void SNA() //skip on negatie AC
+        {
+            Console.WriteLine("IF AC(1) = 1 THEN PC <- PC + 1");
+            if (a.getValue() < 0)
+                pc.increment();
+
+            f = false;
+            return;
+        }
+
+        public void SZA() //skip on AC = 0
+        {
+            Console.WriteLine("IF AC = 0 THEN PC <- PC + 1");
+            if (a.getValue() == 0)
+                pc.increment();
+
+            f = false;
+            return;
+        }
+
+        public void SZE() //skip on E = 0
+        {
+            Console.WriteLine("IF E = 0 THEN PC <- PC + 1");
+            if (e == false)
+                pc.increment();
+
+            f = false;
+            return;
+        }
+
         public void HLT()
         {
             Console.WriteLine("S <- 0");
@@ -448,18 +670,11 @@ namespace Emulatore_Pdp8
             while (s)
             {
                 //Console.WriteLine(pc.getValue());
-
-                /*sussiste un problema da risolvere, anche fetch dovrebbe avere un controllo (if (!f && !r))
-                  che però, se l'istruzione precedente non era un istruzione, ma una label o comunque un valore
-                  allora i due flip flop non verranno mai settati a false e il ciclo continuerà all'infinito senza mai
-                  cambiare istruzione, questo perché i flip-flop vengono cambiati solo nei cicli di I e execute, che
-                  siccome non vengono mai chiamati, i flip-flop non cambieranno mai. per ora su execute controllo
-                  semplicemente se la cella non corrisponde ad alcune istruzioni, se questo è il caso, allora setto
-                  f == false e r == false. questo risolve il problema*/
-
-                Console.WriteLine("Fetch");
                 if(!f && !r)
+                {
+                    Console.WriteLine("Fetch");
                     fetch();
+                }
 
                 if (!f && r)
                 {
@@ -469,8 +684,8 @@ namespace Emulatore_Pdp8
 
                 if (f && !r)
                 {
-                    Console.WriteLine("execute");
                     execute();
+                    Console.WriteLine("");
                 }
             }
         }

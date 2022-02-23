@@ -2,7 +2,6 @@
 
 TODO
 
-importante: dare uno sguardo ai generics del C# (link: https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics);
+dare uno sguardo ai generics del C# (link: https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics);
 
-implementata funzione BSA ma c'è ancora da capire come comportarsi con il salvataggio di MBR in ram[mar].
-implementare AND
+testare ed eventualmente debuggare istruzioni RRI (soprattutti CIL e CIR)
