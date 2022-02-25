@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using PrintSpace;
 using UtilityStuff;
 using Assembler;
+using System.IO;
 
 
 namespace Emulatore_Pdp8
@@ -15,6 +16,12 @@ namespace Emulatore_Pdp8
         bit16_reg = 16,
         bit12_reg = 12,
         bit3_reg = 3
+    }
+
+    enum addressing
+    {
+        direct = 0,
+        indirect = 1
     }
 
     enum MRI //memory reference instruction
@@ -63,17 +70,18 @@ namespace Emulatore_Pdp8
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
 
-
             pdp8 vm = new pdp8();
 
             //di seguito i test fatti con la macchina virtuale
 
-            //vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(2), true);
-            vm.ram[0].setValue(unchecked((short)0b_0111_0010_0000_0000)); //cma
-            vm.ram[1].setValue(unchecked((short)0b_0111_0000_0000_0001));
-            vm.ram[2].setValue(unchecked((short)0b_1111_1111_1111_1111)); 
+            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(5));
+            vm.ram[1] = instructionAssembler.buildMRIop(MRI.ADD, new u12(4));
+            vm.ram[2] = instructionAssembler.buildRRIop(RRI.CIR);
+            vm.ram[3] = instructionAssembler.buildRRIop(RRI.HLT);
+            vm.ram[4].setValue(unchecked((short)0b_1000_0000_0000_0000));
+            vm.ram[5].setValue(unchecked((short)0b_1111_1111_1111_1111));
             //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
-            vm.a.setValue(unchecked((short)0b_1111_1111_1111_1111)); //setting scripted dell'accumulatore per testing
+            vm.a.setValue(unchecked((short)0b_0000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
 
 
             vm.run(); //not so much to say
@@ -580,7 +588,7 @@ namespace Emulatore_Pdp8
             bool tmp = Utility.isBitSet(a.getValue(), 0); //salvo il primo bit di ac su tmp
             short value = a.getValue(); //salvo ac in una variabile per comodità
             value = (short)(value >> 1); //shifto a destra value
-            value = (short)(Utility.setBit((ushort)value, 15, e)); //a questo punto per "shiftare cicolarmente" anche il registro E l'ultimo bit di value divanta uguale a E
+            value = (short)(Utility.setBit((ushort)value, 15, e)); //a questo punto per "shiftare circolarmente" anche il registro E l'ultimo bit di value divanta uguale a E
             
             e = tmp; //infine per "shiftare circolarmente" anche E, questo diventa uguale tmp, ovvero il primo bit di ac prima dello shift
             a.setValue(value); //a ovviamente viene cambiato
