@@ -30,11 +30,18 @@ namespace Assembler
 
             reg.setValue(value);
 
-            Console.WriteLine(Utility.valueToBin(value, RegType.bit16_reg));
             return reg;
         }
 
         public static i16 buildRRIop(RRI instruction)
+        {
+            i16 reg = new i16();
+            reg.setValue((short)instruction);
+
+            return reg;
+        }
+
+        public static i16 buildIOIop(IOI instruction)
         {
             i16 reg = new i16();
             reg.setValue((short)instruction);

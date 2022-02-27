@@ -7,6 +7,7 @@ using PrintSpace;
 using UtilityStuff;
 using Assembler;
 using System.IO;
+using System.Runtime.InteropServices;
 
 
 namespace Emulatore_Pdp8
@@ -31,24 +32,24 @@ namespace Emulatore_Pdp8
         LDA = 0b_010,
         STA = 0b_011,
         BUN = 0b_100,
-        BSA = 0b_101,
+        BSA = 0b_101, // the cursed instruction
         ISZ = 0b_110
     }
 
     enum RRI //register reference instruction
     {
-        CLA = 0b_0111_1000_0000_0000,
-        CLE = 0b_0111_0100_0000_0000,
-        CMA = 0b_0111_0010_0000_0000, 
-        CME = 0b_0111_0001_0000_0000, 
-        CIR = 0b_0111_0000_1000_0000, 
-        CIL = 0b_0111_0000_0100_0000, 
-        INC = 0b_0111_0000_0010_0000, 
-        SPA = 0b_0111_0000_0001_0000, 
-        SNA = 0b_0111_0000_0000_1000, 
-        SZA = 0b_0111_0000_0000_0100, 
-        SZE = 0b_0111_0000_0000_0010, 
-        HLT = 0b_0111_0000_0000_0001
+        CLA = 0b_0111_1000_0000_0000, // azzera l'accumulatore
+        CLE = 0b_0111_0100_0000_0000, // azzera il registro E
+        CMA = 0b_0111_0010_0000_0000, // complementa ad uno l'accumulatore
+        CME = 0b_0111_0001_0000_0000, // complementa E
+        CIR = 0b_0111_0000_1000_0000, // circola a destra E-AC
+        CIL = 0b_0111_0000_0100_0000, // circola a sinistra E-AC
+        INC = 0b_0111_0000_0010_0000, // incrementa di 1 l'accumulatore
+        SPA = 0b_0111_0000_0001_0000, // skippa la prossima istruzione se l'accumulatore è positivo (non uguale a 0)
+        SNA = 0b_0111_0000_0000_1000, // skippa la prossima istruzione se l'accumulatore è negativo (non uguale a 0)
+        SZA = 0b_0111_0000_0000_0100, // skippa la prossima istruzione se l'accumulatore è uguale a 0
+        SZE = 0b_0111_0000_0000_0010, // skippa la prossima istruzione se E è uguale a 0
+        HLT = 0b_0111_0000_0000_0001  // spenge la macchina (o termina il programma nel caso della vm)
     }
 
     enum IOI // I/O instruction set
@@ -57,7 +58,7 @@ namespace Emulatore_Pdp8
         OUT = 0b_1111_0100_0000_0000
     }
 
-    static class Program
+    class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -70,16 +71,20 @@ namespace Emulatore_Pdp8
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
 
+            //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
+
             pdp8 vm = new pdp8();
 
             //di seguito i test fatti con la macchina virtuale
 
-            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(5));
-            vm.ram[1] = instructionAssembler.buildMRIop(MRI.ADD, new u12(4));
-            vm.ram[2] = instructionAssembler.buildRRIop(RRI.CIR);
-            vm.ram[3] = instructionAssembler.buildRRIop(RRI.HLT);
-            vm.ram[4].setValue(unchecked((short)0b_1000_0000_0000_0000));
-            vm.ram[5].setValue(unchecked((short)0b_1111_1111_1111_1111));
+            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(10));
+            vm.ram[1] = instructionAssembler.buildRRIop(RRI.INC);
+            vm.ram[2] = instructionAssembler.buildRRIop(RRI.SPA); 
+            vm.ram[3] = instructionAssembler.buildMRIop(MRI.BUN, new u12(0));
+            vm.ram[4] = instructionAssembler.buildRRIop(RRI.CME);
+            vm.ram[5] = instructionAssembler.buildRRIop(RRI.HLT);
+            vm.ram[10].setValue(0);
+            vm.ram[11].setValue(short.MaxValue);
             //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
             vm.a.setValue(unchecked((short)0b_0000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
 
@@ -90,6 +95,9 @@ namespace Emulatore_Pdp8
             Printf.printRegisters(vm);
             Printf.printSpecRam(0, 6, vm.ram);
 
+            Console.WriteLine("Press any key to close the application");
+            Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
+                               //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
             //Printf.printRam(vm.ram);
         }
     }
@@ -383,6 +391,16 @@ namespace Emulatore_Pdp8
                 Console.Write("execute ");
                 switch (ram[mar.getValue()].getValue())
                 {
+                    case (unchecked((short)IOI.INP)):
+                        Console.WriteLine(IOI.INP);
+                        INP();
+                        break;
+
+                    case (unchecked((short)IOI.OUT)):
+                        Console.WriteLine(IOI.OUT);
+                        OUT();
+                        break;
+
                     default:
                         Console.WriteLine("is this a label?");
                         f = false;
@@ -539,7 +557,10 @@ namespace Emulatore_Pdp8
 
             Console.WriteLine("if (MBR = 0) then (PC <- PC + 1)");
             if (mbr.getValue() == 0)
+            {
+                Console.WriteLine("MBR is 0, skipping next instruction");
                 pc.setValue((ushort)(pc.getValue() + 1)); //salta la prossima istruzione se 0
+            }
 
             f = false;
             return;
@@ -614,13 +635,13 @@ namespace Emulatore_Pdp8
 
         }
 
-
         public void INC()
         {
             Console.WriteLine("E-AC <- AC + 1");
             short c = (short)(a.getValue() + 1);
             //vedi ADD per spiegazione di e
             e = ((a.getValue() ^ (short)1) >= 0) & ((a.getValue() ^ c) < 0);
+            a.setValue(c);
 
             f = false;
             return;
@@ -630,7 +651,10 @@ namespace Emulatore_Pdp8
         {
             Console.WriteLine("IF AC(1) = 0 THEN PC <- PC + 1");
             if (a.getValue() > 0)
+            {
+                Console.WriteLine("Accumulator is positive, Skipping next instruction");
                 pc.increment();
+            }
 
             f = false;
             return;
@@ -640,7 +664,10 @@ namespace Emulatore_Pdp8
         {
             Console.WriteLine("IF AC(1) = 1 THEN PC <- PC + 1");
             if (a.getValue() < 0)
+            {
+                Console.WriteLine("Accumulator is negative, Skipping next instruction");
                 pc.increment();
+            }
 
             f = false;
             return;
@@ -650,7 +677,10 @@ namespace Emulatore_Pdp8
         {
             Console.WriteLine("IF AC = 0 THEN PC <- PC + 1");
             if (a.getValue() == 0)
+            {
+                Console.WriteLine("Accumulator is zero, Skipping next instruction");
                 pc.increment();
+            }
 
             f = false;
             return;
@@ -660,7 +690,10 @@ namespace Emulatore_Pdp8
         {
             Console.WriteLine("IF E = 0 THEN PC <- PC + 1");
             if (e == false)
+            {
+                Console.WriteLine("E register is zero, Skipping next instruction");
                 pc.increment();
+            }
 
             f = false;
             return;
@@ -672,10 +705,30 @@ namespace Emulatore_Pdp8
             s = false;
         }
 
+        //qui le due istruzioni di IO viste nel corso
+        /*nb: queste due operazioni sono solo temporanee e dovranno essere modificate durante la realizzazione dell'interfaccia grafica*/
+        public void INP()
+        {
+            Console.WriteLine("AC <- ASCII(keyboard)");
+            ConsoleKeyInfo inp = Console.ReadKey();
+            a.setValue((short)inp.Key);
+
+            f = false;
+            return;
+        }
+
+        public void OUT()
+        {
+            Console.WriteLine("Terminal <- AC");
+            Console.WriteLine("Output: " + Convert.ToChar(a.getValue()));
+
+            f = false;
+            return;
+        }
+
         public void run()
         {
-            //ovviamente qui va un while
-            while (s)
+            while (s) //fino a quando la macchina è accesa.
             {
                 //Console.WriteLine(pc.getValue());
                 if(!f && !r)
