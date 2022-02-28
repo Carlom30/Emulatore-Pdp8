@@ -77,7 +77,7 @@ namespace Emulatore_Pdp8
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
 
-            //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
+            /*//Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
 
             Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
             //u12 resutl = labelTabel["sus"];
@@ -89,7 +89,7 @@ namespace Emulatore_Pdp8
             Console.WriteLine("");
             Console.ReadKey();
 
-            return; //test vari per parsing
+            return; //test vari per parsing*/
 
             pdp8 vm = new pdp8();
 
