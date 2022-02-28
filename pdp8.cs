@@ -25,6 +25,12 @@ namespace Emulatore_Pdp8
         indirect = 1
     }
 
+    enum PseudoInstruction
+    {
+        ORG = -2,
+        END = -3,
+    }
+
     enum MRI //memory reference instruction
     {
         AND = 0b_000,
@@ -33,7 +39,7 @@ namespace Emulatore_Pdp8
         STA = 0b_011,
         BUN = 0b_100,
         BSA = 0b_101, // the cursed instruction
-        ISZ = 0b_110
+        ISZ = 0b_110,
     }
 
     enum RRI //register reference instruction
@@ -49,13 +55,13 @@ namespace Emulatore_Pdp8
         SNA = 0b_0111_0000_0000_1000, // skippa la prossima istruzione se l'accumulatore è negativo (non uguale a 0)
         SZA = 0b_0111_0000_0000_0100, // skippa la prossima istruzione se l'accumulatore è uguale a 0
         SZE = 0b_0111_0000_0000_0010, // skippa la prossima istruzione se E è uguale a 0
-        HLT = 0b_0111_0000_0000_0001  // spenge la macchina (o termina il programma nel caso della vm)
+        HLT = 0b_0111_0000_0000_0001,  // spenge la macchina (o termina il programma nel caso della vm)
     }
 
     enum IOI // I/O instruction set
     {
         INP = 0b_1111_1000_0000_0000, 
-        OUT = 0b_1111_0100_0000_0000
+        OUT = 0b_1111_0100_0000_0000,
     }
 
     class Program
@@ -72,6 +78,18 @@ namespace Emulatore_Pdp8
             Console.WriteLine("hello world!\n");
 
             //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
+
+            Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
+            //u12 resutl = labelTabel["sus"];
+
+            string[] source = File.ReadAllLines("Source.txt");
+
+            Compiler.Compile(source);
+
+            Console.WriteLine("");
+            Console.ReadKey();
+
+            return; //test vari per parsing
 
             pdp8 vm = new pdp8();
 

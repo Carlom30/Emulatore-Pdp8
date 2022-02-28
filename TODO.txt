@@ -2,6 +2,6 @@
 
 TODO
 
-dare uno sguardo ai generics del C# (link: https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/types/generics);
+iniziare fucking compilatore
 
-testare ed eventualmente debuggare istruzioni RRI (soprattutti CIL e CIR)
+
