@@ -60,15 +60,15 @@ Più nel dettaglio, le funzioni per buildare le istruzioni pdp8 si trovano nella
 
 ora, le istruzioni del pdp8 si suddividono in 3 categorie: 
 
-Memory reference instruction    MRI
-Register Reference instruction  RRI
-I/O instruction                 IOI
+- Memory reference instruction    MRI
+- Register Reference instruction  RRI
+- I/O instruction                 IOI
 
 la vm mantiene questa divisione, quindi ogni tipo di funzione di build è riferita ad una categoria, troviamo quindi 
 
-instructionAssembler.buildMRIop
-instructionAssembler.buildRRIop
-instructionAssembler.buildIOIop
+- instructionAssembler.buildMRIop
+- instructionAssembler.buildRRIop
+- instructionAssembler.buildIOIop
 
 come nell'esempio, buildMRIop prende come parametri: l'istruzione da buildare, il registro a 12 bit al quale ci si riferisce (in questo caso l'i-esima poizione nell'array della ram, come si vede chiaramente nell'esempio), e, nel caso si voglia aggiungere l'indirizzamento indiretto, basta aggiungere come terzo parametro "addressing.indirect"
 così:
