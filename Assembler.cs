@@ -54,6 +54,7 @@ namespace Assembler
         {
             int lineCounter = 1;
             string[] source = sourceCode;
+
             removeSpaces(source);
 
             //prima passata
@@ -83,15 +84,16 @@ namespace Assembler
                         string isValid = "";
                         isValid += source[i][j + 1].ToString() + source[i][j + 2].ToString() + source[i][j + 3].ToString();
                         Console.WriteLine(isValid);
+                        
 
-                        if (isValid == "DEC" || isValid == "HEX")
+                        if (isValid == "DEC" || isValid == "HEX" || (checkIfOp(isValid) != -1 && checkIfOp(isValid) != (short)PseudoInstruction.END && checkIfOp(isValid) != (short)PseudoInstruction.ORG))
                         {
                             Console.WriteLine("Label!");
                         }
 
                         else
                         {
-                            Console.WriteLine("Line " + lineCounter + ": you can only use <DEC> or <HEX> for a label value");
+                            Console.WriteLine("Line " + lineCounter + ": you can only use <DEC>, <HEX> or an istruction for a label value");
                             return;
                         }
 
@@ -158,6 +160,8 @@ namespace Assembler
                 //if (source[i].Length == 0)
                     //continue;
                 source[i] = source[i].Replace(" ", "");
+                source[i] = source[i].Replace("\t", "");
+                source[i] = source[i].Replace("\r", "");
                 Console.WriteLine(source[i]);
             }
         }
