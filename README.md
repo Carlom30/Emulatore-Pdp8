@@ -1,6 +1,6 @@
-the Emulator Handbook
+The Emulator Handbook
 
-il manualetto che segue, come si vedrà, è suddiviso in 3 parti:
+La documentazione che segue è suddiviso in 3 parti:
 
 - utilizzo dell'emulatore come sola macchina virtuale.
 - utilizzo dell'emulatore con compilatore.
