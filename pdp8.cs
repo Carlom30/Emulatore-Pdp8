@@ -84,25 +84,25 @@ namespace Emulatore_Pdp8
 
             string[] source = File.ReadAllLines("Source.txt");
 
-            Compiler.Compile(source);
+            /*Compiler.Compile(source);
 
             Console.WriteLine("");
             Console.ReadKey();
 
-            return; //test vari per parsing
+            return; //test vari per parsing*/
 
             pdp8 vm = new pdp8();
 
             //di seguito i test fatti con la macchina virtuale
 
-            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(10));
-            vm.ram[1] = instructionAssembler.buildRRIop(RRI.INC);
-            vm.ram[2] = instructionAssembler.buildRRIop(RRI.SPA); 
-            vm.ram[3] = instructionAssembler.buildMRIop(MRI.BUN, new u12(0));
-            vm.ram[4] = instructionAssembler.buildRRIop(RRI.CME);
+            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(11));
+            vm.ram[1] = instructionAssembler.buildMRIop(MRI.ADD, new u12(10));
+            vm.ram[2] = instructionAssembler.buildRRIop(RRI.CMA);
+            vm.ram[3] = instructionAssembler.buildRRIop(RRI.INC);
+            vm.ram[4] = instructionAssembler.buildMRIop(MRI.STA, new u12(11));
             vm.ram[5] = instructionAssembler.buildRRIop(RRI.HLT);
-            vm.ram[10].setValue(0);
-            vm.ram[11].setValue(short.MaxValue);
+            vm.ram[10].setValue(7);
+            vm.ram[11].setValue(15);
             //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
             vm.a.setValue(unchecked((short)0b_0000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
 

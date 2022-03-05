@@ -56,6 +56,59 @@ come ad esempio:
 il codice appena descritto carica nell'accumulatore il valore nel registro 11, somma poi l'accumulatore con il valore contenuto nel registro 10, per poi complementarlo ad uno ed incrementarlo di uno per avere il complemnto a due dell'accumulatore. Infine salva l'accumulatore sul registro 11 e la macchina si spenge (HLT).
 le ultime due righe sono variabili.
 
+quanto segue il print su terminale a fine esecuzione:
+
+    Fetch
+    found MRI ops
+    execute LDA
+    MAR <- MBR(AD)
+    MBR <- M, AC <- 0
+    AC <- AC + MBR
+
+    Fetch
+    found MRI ops
+    execute ADD
+    MAR <- MBR(AD)
+    MBR <- M
+    EAC <- AC + MBR
+
+    Fetch
+    found RRI ops
+    execute CMA
+    AC <- AC'
+
+    Fetch
+    found RRI ops
+    execute INC
+    E-AC <- AC + 1
+
+    Fetch
+    found MRI ops
+    execute STA
+    MAR <- MBR(AD)
+    MBR <- AC
+    M <- MBR
+
+    Fetch
+    found RRI ops
+    execute HLT
+    S <- 0
+
+    MBR: DEC 28673 BIN 0111000000000001
+    A: DEC -22 BIN 1111111111101010
+    MAR: DEC 5 BIN 000000000101
+    PC: DEC 6 BIN 000000000110
+    S: 0 F: 1 R: 0 I: 0 E: 0
+    OPR: 111
+    register: 0 DEC: 8203 BIN: 0010000000001011
+    register: 1 DEC: 4106 BIN: 0001000000001010
+    register: 2 DEC: 29184 BIN: 0111001000000000
+    register: 3 DEC: 28704 BIN: 0111000000100000
+    register: 4 DEC: 12299 BIN: 0011000000001011
+    register: 5 DEC: 28673 BIN: 0111000000000001
+    register: 6 DEC: 0 BIN: 0000000000000000
+    Press any key to close the application
+
 Più nel dettaglio, le funzioni per buildare le istruzioni pdp8 si trovano nella classe "instructionAssembler" e vanno quindi chiamate come sopra descritto. (InstructionAssembler."funzione apposita").
 
 ora, le istruzioni del pdp8 si suddividono in 3 categorie: 
