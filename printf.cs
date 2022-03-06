@@ -43,5 +43,10 @@ namespace PrintSpace
             }
             return;
         }
+
+        public static void printCompileErr(int line, string logToPrint)
+        {
+            Console.WriteLine("Line " + line + ": " + logToPrint);
+        }
     }
 }

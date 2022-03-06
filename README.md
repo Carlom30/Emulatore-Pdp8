@@ -1,6 +1,6 @@
 The Emulator Handbook
 
-La documentazione che segue è suddiviso in 3 parti:
+La documentazione che segue è suddivisa in 3 parti:
 
 - utilizzo dell'emulatore come sola macchina virtuale.
 - utilizzo dell'emulatore con compilatore.
@@ -10,7 +10,7 @@ con aggiunta di qualche esempio su come programmare in pdp8 (Macchina Didattica 
 
 ----------------------------------------------------------------------------------------------------------------------------
 
-Per prima cosa, si noti che l'emulatore è costruito solamente per sistema operativo Windows ed è quindi impossibile l'utilizzo in sistemi operativi Linux (D:).
+Per prima cosa, si noti che l'emulatore è costruito solamente per sistema operativo Windows ed è quindi impossibile l'utilizzo in sistemi operativi Linux.
 
 è sufficiente aprire il file eseguibile per avviare il programma.
 
@@ -143,7 +143,7 @@ tutte le istruzioni vanno passate tramite la loro descrizione come enum, quindi 
 
 in assenza di un compilatore è ovvio che non è possibile creare delle label e quindi è necessario riferirsi agli indirizzi di memoria esplicitamente con il loro indirizzo.
 
-in ultimo, Printf.printSpecRam() è una funzione che permette di dumpare un certo range di memoria come nell'esempio descritto precedentemente, che dumpa la memoria dal banco 0 al banco 11, in alternativa è possibile utilizzare la funzione Printf.printRam(vm.ram[]) che dumpa tutta la memoria (2^12 registri, quindi parecchi hehe).
+in ultimo, Printf.printSpecRam() è una funzione che permette di dumpare un certo range di memoria come nell'esempio descritto precedentemente, che dumpa la memoria dal banco 0 al banco 11, in alternativa è possibile utilizzare la funzione Printf.printRam(vm.ram[]) che dumpa tutta la memoria (2^12 registri, quindi parecchi).
 
 ----------------------------------------------------------------------------------------------------------------------------
 

@@ -15,7 +15,7 @@ namespace Assembler
 {
     class Compiler
     {
-        private static ushort LC = 0;
+        private static u12 LC = new u12(0);
         private static Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
         private static MRI[] MRIops = new MRI[]
         {
@@ -54,6 +54,7 @@ namespace Assembler
         {
             int lineCounter = 1;
             string[] source = sourceCode;
+            bool isEND = false;
 
             removeSpaces(source);
 
@@ -72,38 +73,71 @@ namespace Assembler
                         label += ch;
                     }
 
+                    if (label == "ORG")
+                    {
+                        Console.WriteLine("Found ORG setting LC");
+                        string value = "";
+                        for(int k = j + 1; k < source[i].Length; k++)
+                        {
+                            value += source[i][k];
+                        }
+                        Console.WriteLine(value);
+
+                        if(!OnlyHexInString(value))
+                        {
+                            Printf.printCompileErr(lineCounter, "you can only use Hexadecimal values for ORG");
+                            return;
+                        }
+
+                        LC.setValue(ushort.Parse(value, System.Globalization.NumberStyles.HexNumber)); //parse string to hex and setting LC
+                        //analizza il valore dopo ORG e setta LC
+                        //NB utilizzare dopo ORG qualcosa come ADD, vabene, perché ADD è un valore ammesso in esadecimale e quindi passabile
+                    }
+
+                    if (label == "END")
+                    {
+                        isEND = true;
+                        Console.WriteLine("Compiler's first step completed");
+                        break;
+                    }
+
                     else if (ch == ',')
                     {
                         short isOp = checkIfOp(label);
                         if(isOp != -1)
                         {
-                            Console.WriteLine("Line " + lineCounter + ": you can't use an instruction or pseudo-instruction as a Label");
+                            Printf.printCompileErr(lineCounter, "you can't use an instruction or pseudo-instruction as a Label");
                             return;
                         }
 
                         string isValid = "";
                         isValid += source[i][j + 1].ToString() + source[i][j + 2].ToString() + source[i][j + 3].ToString();
-                        Console.WriteLine(isValid);
-                        
+                        //Console.WriteLine(isValid);
 
-                        if (isValid == "DEC" || isValid == "HEX" || (checkIfOp(isValid) != -1 && checkIfOp(isValid) != (short)PseudoInstruction.END && checkIfOp(isValid) != (short)PseudoInstruction.ORG))
+                        isOp = checkIfOp(isValid);
+                        if (isValid == "DEC" || isValid == "HEX" || (isOp != -1 && isOp != (short)PseudoInstruction.END && isOp != (short)PseudoInstruction.ORG))
                         {
                             Console.WriteLine("Label!");
+                            labelTabel.Add(isValid, new u12(LC.getValue()));
                         }
 
                         else
                         {
-                            Console.WriteLine("Line " + lineCounter + ": you can only use <DEC>, <HEX> or an istruction for a label value");
+                            Printf.printCompileErr(lineCounter, "you can only use <DEC>, <HEX> or an istruction for a label value");
                             return;
                         }
 
                         //lookForLabel(source);
                     }
-                    LC++;
+                    if (isEND)
+                        break;
+
+                    LC.increment();
                 }
                 label = "";
                 lineCounter++;
             }
+            lineCounter = 1;
         }
 
 
@@ -164,6 +198,18 @@ namespace Assembler
                 source[i] = source[i].Replace("\r", "");
                 Console.WriteLine(source[i]);
             }
+        }
+
+        private static bool OnlyHexInString(string test) //check se nella stringa ci sono solo valori esadecimali (works)
+        {
+            // For C-style hex notation (0xFF) you can use @"\A\b(0[xX])?[0-9a-fA-F]+\b\Z
+            return System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
+            // https://stackoverflow.com/questions/223832/check-a-string-to-see-if-all-characters-are-hexadecimal-values
+        }
+
+        private static void printCompileErr(int lineCounter, string logToPrint)
+        {
+            Console.WriteLine("Line " + lineCounter + ": " + logToPrint);
         }
     }
 
