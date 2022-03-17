@@ -64,8 +64,17 @@ namespace Emulatore_Pdp8
         OUT = 0b_1111_0100_0000_0000,
     }
 
+    enum pseudoOPs
+    {
+        ORG,
+        END,
+        DEC,
+        HEX
+    }
+
     class Program
     {
+        
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -82,8 +91,27 @@ namespace Emulatore_Pdp8
 
             string[] source = File.ReadAllLines("Source.txt");
 
-            Compiler.Compile(source);
+            LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
+            if(tokenizedSource == null)
+            {
+                goto here;
+            }
 
+            for(int i = 0; i < tokenizedSource.Length; i++)
+            {
+                if(tokenizedSource[i].type == PatternType.PT_EMPTYLINE)
+                {
+                    continue;
+                }
+
+                for(int j = 0; j < tokenizedSource[i].pattern.Length; j++)
+                {
+                    Console.Write(" " + tokenizedSource[i].pattern[j].type.ToString());
+                }
+                Console.Write("\n");
+            }
+
+            here:
             Console.WriteLine("");
             Console.ReadKey();
 
@@ -110,7 +138,6 @@ namespace Emulatore_Pdp8
 
             Printf.printRegisters(vm);
             Printf.printSpecRam(0, 6, vm.ram);
-
             Console.WriteLine("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows

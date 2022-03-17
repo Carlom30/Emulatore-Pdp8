@@ -2,6 +2,7 @@
 
 TODO
 
-iniziare fucking compilatore
+analizzatore lessicale fucking buggato
+rifare prima passata compilatore 
 
 
