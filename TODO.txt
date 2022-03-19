@@ -2,7 +2,6 @@
 
 TODO
 
-analizzatore lessicale fucking buggato
-rifare prima passata compilatore 
+hex non riconosce il segno -
 
 

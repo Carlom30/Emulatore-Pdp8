@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +43,16 @@ namespace Assembler
         PT_Label_comma_Pseudo_Value = 6,
         PT_Pseudo_value = 7,
         PT_PseudoOnly = 8,
+        PT_Pseudo_label = 9, //è probabile che la label sia un valore esadecimale
+        PT_Label_comma_Pseudo_Label = 10, //same shit, per non complicare le cose, dopo HEX deve essereci un valore esadecimale, che però il lexer
+                                          //scambia per una label, quindi faccio che al lexer va bene di trovare una label, i controlli se effettivamente 
+                                          //il valore va bene li farò più avanti nella compilazione.
+        PT_MRIValue = 11,
+        PT_MRIValue_Indirect = 12,
+        PT_Label_comma_pseudoOnly = 13,
+
+        PT_Lable_comma_MRIValue = 14,
+        PT_Lable_comma_MRIValue_indirect = 15,
 
         PT_EMPTYLINE,
         PT_NOTAPATTERN //questo qui è pretty importante
@@ -62,7 +73,7 @@ namespace Assembler
 
     class Lexer
     {
-        private const int numberOfpatterns = 9; //totale dei pattern riconosciuti, non può mai cambiare
+        private const int numberOfpatterns = 16; //totale dei pattern riconosciuti, non può mai cambiare
         private static TokenType[] pattern_00 = new TokenType[]
         {
             TokenType.TK_RRIorIOI
@@ -108,6 +119,43 @@ namespace Assembler
             TokenType.TK_pseudoInstruction
         };
 
+        private static TokenType[] pattern_09 = new TokenType[]
+        {
+            TokenType.TK_pseudoInstruction, TokenType.TK_Label
+        };
+
+        private static TokenType[] pattern_10 = new TokenType[]
+        {
+            TokenType.TK_Label, TokenType.TK_comma, TokenType.TK_pseudoInstruction, TokenType.TK_Label
+        };
+
+        private static TokenType[] pattern_11 = new TokenType[]
+        {
+            TokenType.TK_MRI, TokenType.TK_value
+        };
+
+        private static TokenType[] pattern_12 = new TokenType[]
+        {
+            TokenType.TK_MRI, TokenType.TK_value, TokenType.TK_indirectAddressing
+        };
+
+        private static TokenType[] pattern_13 = new TokenType[]
+        {
+            TokenType.TK_Label, TokenType.TK_comma, TokenType.TK_pseudoInstruction
+        };
+
+        private static TokenType[] pattern_14 = new TokenType[]
+        {
+            TokenType.TK_Label, TokenType.TK_comma, TokenType.TK_MRI, TokenType.TK_value
+        };
+
+        private static TokenType[] pattern_15 = new TokenType[]
+        {
+            TokenType.TK_Label, TokenType.TK_comma, TokenType.TK_MRI, TokenType.TK_value, TokenType.TK_indirectAddressing
+        };
+
+
+
         private static TokenType[][] allPatterns = new TokenType[numberOfpatterns][]
         {
             pattern_00,
@@ -118,7 +166,14 @@ namespace Assembler
             pattern_05,
             pattern_06,
             pattern_07,
-            pattern_08
+            pattern_08,
+            pattern_09,
+            pattern_10,
+            pattern_11,
+            pattern_12,
+            pattern_13,
+            pattern_14,
+            pattern_15
         };
 
         private static PatternType[] allPatternsType = new PatternType[numberOfpatterns]
@@ -131,7 +186,15 @@ namespace Assembler
             PatternType.PT_Label_comma_RRIIOI,
             PatternType.PT_Label_comma_Pseudo_Value,
             PatternType.PT_Pseudo_value,
-            PatternType.PT_PseudoOnly
+            PatternType.PT_PseudoOnly,
+            PatternType.PT_Pseudo_label,
+            PatternType.PT_Label_comma_Pseudo_Label,
+            PatternType.PT_MRIValue,
+            PatternType.PT_MRIValue_Indirect,
+            PatternType.PT_Label_comma_pseudoOnly,
+            PatternType.PT_Lable_comma_MRIValue,
+            PatternType.PT_Lable_comma_MRIValue_indirect //going mad :DDDDDDDDDDDDDD
+                                                         //dovrebbero essere tutti
         };
 
         private static void removeTabs(string[] source)
@@ -227,7 +290,7 @@ namespace Assembler
 
                 if(check == PatternType.PT_NOTAPATTERN)
                 {
-                    Console.WriteLine("Line " + lineCount + ":" + " Compile error"); //pattern non riconosciuto, errore di compilazione
+                    Printf.printCompileErr(lineCount, "Syntax ERROR"); //pattern non riconosciuto, errore di compilazione
                     return null;
                 }
 
@@ -330,195 +393,270 @@ namespace Assembler
     {
         private static u12 LC = new u12(0);
         private static Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
-        
-        /*public static void Compile(string[] sourceCode)
+        private static List<string> labelKeys = new List<string>();
+        public static bool Compile(string[] source, i16[] ram)
         {
-            int lineCounter = 1;
-            string[] source = sourceCode;
-            List<string> allLalebl = new List<string>();
-            
-            bool isEND = false;
-            bool commaFound = false;
+            LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
+            bool tryFirstStep = false;
+            bool trySecondStep = false;
+            bool compiled = false;
 
-            removeSpaces(source);
+            if(tokenizedSource != null)
+                tryFirstStep = primaPassata(tokenizedSource);
+            if (tryFirstStep == true)
+                trySecondStep = secondaPassata(tokenizedSource, ram);
+            //first compiler step
+            //second compiler step
+            return trySecondStep;
+        }
 
-            //prima passata
-            string label = "";
-            for (int i = 0; i < source.Length; i++)
+        public static bool primaPassata(LineCode[] source)
+        {
+            int lineCount = 1;
+            LC.setValue(0); //durante entramble le passate LC DEVE essere 0, quindi per sicurezza lo setto sempre
+            for(int i = 0; i < source.Length; i++)
             {
-                if (source[i].Length == 0)
-                    continue;
+                if (i > 0)
+                    lineCount++;
 
-                for (int j = 0; j < source[i].Length; j++)
+                if(source[i].type == PatternType.PT_EMPTYLINE)
                 {
-                    if(char.IsDigit(source[i][0]))
-                    {
-                        Printf.printCompileErr(lineCounter, "you can't use numbers as first Label Character");
-                        return;
-                    }
+                    continue;
+                }
 
-                    char ch = source[i][j];
+                else if(source[i].pattern[0].type == TokenType.TK_Label) //ovvero, se il primo elemento della riga è una label
+                {
+                    labelTabel.Add(source[i].pattern[0].lexem, new u12(LC.getValue()));
+                    labelKeys.Add(source[i].pattern[0].lexem);
+                }
 
-                    if(ch == '/')
+                else if(source[i].type == PatternType.PT_Pseudo_label)
+                {
+                    string lexem = source[i].pattern[0].lexem;
+                    string label = source[i].pattern[1].lexem;
+                    if (lexem == "ORG")
                     {
-                        Console.WriteLine("Comment");
-                        break;
-                    }
-
-                    if (ch != ',')
-                    {
-                        label += ch;
-                    }
-
-                    if (label == "ORG")
-                    {
-                        Console.WriteLine("Found ORG setting LC");
-                        string value = "";
-                        for(int k = j + 1; k < source[i].Length; k++)
+                        if (!OnlyHexInString(label))
                         {
-                            value += source[i][k];
-                        }
-                        Console.WriteLine(value);
-
-                        if(!OnlyHexInString(value))
-                        {
-                            Printf.printCompileErr(lineCounter, "you can only use Hexadecimal values for ORG");
-                            return;
-                        }
-
-                        LC.setValue(ushort.Parse(value, System.Globalization.NumberStyles.HexNumber)); //parse string to hex and setting LC
-                        //analizza il valore dopo ORG e setta LC
-                        //NB utilizzare dopo ORG qualcosa come ADD, vabene, perché ADD è un valore ammesso in esadecimale e quindi passabile
-                    }
-
-                    if (label == "END")
-                    {
-                        isEND = true;
-                        Console.WriteLine("Compiler's first step completed");
-                        break;
-                    }
-
-                    else if (ch == ',' && !commaFound)
-                    {
-                        commaFound = true;
-                        short isOp = checkIfOp(label);
-                        if(isOp != -1)
-                        {
-                            Printf.printCompileErr(lineCounter, "you can't use an instruction or pseudo-instruction as a Label");
-                            return;
-                        }
-
-                        string isValid = "";
-                        isValid += source[i][j + 1].ToString() + source[i][j + 2].ToString() + source[i][j + 3].ToString();
-                        //Console.WriteLine(isValid);
-
-                        isOp = checkIfOp(isValid);
-                        if (isValid == "DEC" || isValid == "HEX" || (isOp != -1 && isOp != (short)PseudoInstruction.END && isOp != (short)PseudoInstruction.ORG))
-                        {
-                            Console.WriteLine("Label!");
-                            labelTabel.Add(label, new u12(LC.getValue()));
-                            allLalebl.Add(label);                          
+                            Printf.printCompileErr(lineCount, "you can only use hexadecimal value for ORG");
+                            return false;
                         }
 
                         else
                         {
-                            Printf.printCompileErr(lineCounter, "you can only use <DEC>, <HEX> or an istruction for a label value");
-                            return;
+                            LC.setValue(ushort.Parse(label, System.Globalization.NumberStyles.HexNumber));
+                            continue;
+                        }
+                    }
+
+                    else if(lexem == "END" || lexem == "DEC")
+                    {
+                        Printf.printCompileErr(lineCount, "syntax ERROR");
+                        return false;
+                    }
+                }
+
+                else if (source[i].type == PatternType.PT_Pseudo_value)
+                {
+                    string lexem = source[i].pattern[0].lexem;
+                    string label = source[i].pattern[1].lexem;
+                    if (lexem == "ORG")
+                    {
+                        LC.setValue(ushort.Parse(label, System.Globalization.NumberStyles.HexNumber)); //andrea: "qui gatta ci cova"
+                        continue;
+                    }
+                }
+
+                else if(source[i].type == PatternType.PT_PseudoOnly)
+                {
+                    string lexem = source[i].pattern[0].lexem;
+                    if (lexem != "END")
+                    {
+                        Printf.printCompileErr(lineCount, "syntax ERROR, are you missing a value?");
+                        return false;
+                    }
+
+                    else if(lexem == "END")
+                    {
+                        break;
+                    }
+                }
+
+                LC.increment();
+            }
+
+            for(int i = 0; i < labelKeys.Count; i++)
+            {
+                Console.WriteLine(labelKeys[i] + " " + labelTabel[labelKeys[i]].getValue());
+            }
+            Console.WriteLine("");
+
+
+            return true;
+        }
+        
+        public static bool secondaPassata(LineCode[] source, i16[] ram) //Implementazione passaggi assembler delle dispende del prof navarra
+        {
+            LC.setValue(0);
+            int lineCount = 1;
+
+            for(int i = 0; i < source.Length; i++)
+            {
+                if (source[i].type == PatternType.PT_EMPTYLINE)
+                {
+                    continue;
+                }
+                int k = 0;
+                //per prima cosa faccio le pseudo istruzioni
+                LineCode line = source[i];
+
+                while (k < line.pattern.Length) //in teoria questo funzoina still testing
+                {
+                    TokenType tp = line.pattern[k].type;
+                    if (tp == TokenType.TK_MRI || tp == TokenType.TK_RRIorIOI || tp == TokenType.TK_pseudoInstruction)
+                    {
+                        break;
+                    }
+
+                    k++;
+                }
+
+                if (i > 0)
+                    lineCount++;
+
+                //END
+                if(line.type == PatternType.PT_PseudoOnly || line.type == PatternType.PT_Label_comma_pseudoOnly)
+                {
+                    string pseudo = line.pattern[k].lexem;
+                    if(pseudo == "END")
+                    {
+                        //finito 
+                        break;
+                    }
+
+                    else
+                    {
+                        Printf.printCompileErr(lineCount, "syntax ERROR, are you missing a value?");
+                        return false;
+                        //in teoria questo passaggio è evitabile perché lo faccio nella prima passata.
+                    }
+                }
+
+                //ORG DEC HEX
+                else if((line.type == PatternType.PT_Pseudo_value || line.type == PatternType.PT_Pseudo_label 
+                      || line.type == PatternType.PT_Label_comma_Pseudo_Value || line.type == PatternType.PT_Label_comma_Pseudo_Label))
+                {
+                    string pseudo = line.pattern[k].lexem; //pseudoistruzione 
+                    string value = line.pattern[k + 1].lexem; //valore, che sia esadecimale o decimale
+                    
+                    if(pseudo == "ORG")
+                    {
+                        LC.setValue(ushort.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                        continue;
+                    }
+
+                    else if(pseudo == "DEC")
+                    {
+                        if(line.type == PatternType.PT_Pseudo_label)
+                        {
+                            Printf.printCompileErr(lineCount, "you can only use decimal value for DEC");
+                            return false;
                         }
 
-                        //lookForLabel(source);
-                    }
-                    
-                    else if (ch == ',' && commaFound)
-                    {
-                        Printf.printCompileErr(lineCounter, "only use comma for Label!");
-                        return;
-                    }
-
-                    if (isEND)
-                        break;
-                }
-                label = "";
-                lineCounter++;
-                commaFound = false;
-                //Console.Write(lineCounter);
-                LC.increment();
-                //Console.WriteLine(LC.getValue());
-            }
-
-            lineCounter = 1;
-
-            for(int i = 0; i < allLalebl.Count; i++) //just printing things
-            {
-                string actualLabel = allLalebl[i];
-                u12 address = labelTabel[actualLabel];
-                Console.WriteLine(actualLabel + " " + address.getValue());
-            }
-
-            //seconda passata:
-            LC.setValue(0);
-        }*/
-
-        /*public static short checkIfOp(string label) //verifico se una certa label è una istruzione/pseudo-istruzione
-        {
-            short ret = -1; //nb nessuna istruzione ha -1 come opr (infatti -1 è 0b_1111_1111_1111_1111)
-            
-            //check for MRI
-            for(int i = 0; i < MRIops.Length; i++)
-            {
-                if(label == MRIops[i].ToString())
-                {
-                    ret = (short)MRIops[i];
-                    return ret;
-                }
-            }
-
-            for(int i = 0; i < RRIops.Length; i++)
-            {
-                if (label == RRIops[i].ToString())
-                {
-                    ret = (short)RRIops[i];
-                    return ret;
-                }
-            }
-
-            for (int i = 0; i < IOIops.Length; i++)
-            {
-                if (label == IOIops[i].ToString())
-                {
-                    ret = (short)IOIops[i];
-                    return ret;
-                }
-            }
-
-            if(label == PseudoInstruction.ORG.ToString() || label == PseudoInstruction.END.ToString())
-            {
-                if (label == PseudoInstruction.ORG.ToString())
-                    ret = (short)PseudoInstruction.ORG;
-
-                else
-                    ret = (short)PseudoInstruction.END;
-
-                return ret;
-            }
-
-            return ret; 
-        }*/
+                        ram[LC.getValue()].setValue(short.Parse(value)); //valore inserito nella ram
+                        LC.increment();
  
-        private static void removeSpaces(string[] source) //public static momentaneamente
-        {
-            for (int i = 0; i < source.Length; i++)
-            {
-                //if (source[i].Length == 0)
-                //continue;
-                source[i] = source[i].Replace(" I", "*I");
-                source[i] = source[i].Replace("\tI", "*I");
-                source[i] = source[i].Replace(" ", "");
-                source[i] = source[i].Replace("\t", "");
-                source[i] = source[i].Replace("\r", "");
-                Console.WriteLine(source[i]);
+                    }
+
+                    else if(pseudo == "HEX")
+                    {
+                        if (!OnlyHexInString(value))
+                        {
+                            Printf.printCompileErr(lineCount, "syntax ERROR");
+                            return false;
+                        }
+
+                        ram[LC.getValue()].setValue(short.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                        LC.increment();
+                    }
+                    //non faccio altri check perché se ci sono errori vengono intercettati nella prima passata
+                }
+                //PSEUDO FATTE IN TEORIA, PASSIAMO ALLE ISTRUZIONI
+                //RRI
+                else if(line.type == PatternType.PT_RRIIOIonly || line.type == PatternType.PT_Label_comma_RRIIOI)
+                {   
+                    string lexem = line.pattern[k].lexem;
+                    IOI istr = IOI.NOT_IOIISTR;
+                    if(lexem == IOI.INP.ToString())
+                    {
+                        istr = IOI.INP;
+                    }
+
+                    else if(lexem == IOI.OUT.ToString())
+                    {
+                        istr = IOI.OUT;
+                    }
+
+                    if(istr != IOI.NOT_IOIISTR)
+                    {
+                        ram[LC.getValue()].setValue(instructionAssembler.buildIOIop(istr).getValue());
+                        LC.increment();
+                        continue;
+                    }
+
+                    //se il codice iarriva qui allora l'istr non era una IOI
+                    RRI instr = instructionAssembler.findRRI(lexem);
+                    if(instr == RRI.NOT_INSTR)
+                    {
+                        Console.WriteLine("something went wrong lmao");
+                        return false;
+                    }
+
+                    ram[LC.getValue()].setValue(instructionAssembler.buildRRIop(instr).getValue());
+                    LC.increment();
+                }
+
+                else if(line.type == PatternType.PT_MRILabel || line.type == PatternType.PT_MRILabel_Indirect ||
+                        line.type == PatternType.PT_Label_comma_MRILabel || line.type == PatternType.PT_Label_comma_MRILabel_Indirect ||
+                        line.type == PatternType.PT_Lable_comma_MRIValue || line.type == PatternType.PT_Lable_comma_MRIValue_indirect)
+                {
+                    string lexem = line.pattern[k].lexem;
+                    string address = line.pattern[k + 1].lexem;
+                    u12 addressValue = new u12();
+                    ushort addressValue_ = 0;
+                    addressing addressType = addressing.direct;
+
+
+                    //per prima cosa controllo se il valore è una label
+                    if(!(labelTabel.TryGetValue(address, out addressValue)))
+                    {
+                        if(ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addressValue_))
+                        {
+                            //allora è un esadecimale (anche se fosse decimale, comunque lo tratto da esadeciamle
+                            addressValue.setValue(addressValue_);
+                        }
+
+                        else
+                        {
+                            //allora è errore
+                            Printf.printCompileErr(lineCount, address + " no such Label or value");
+                            return false;
+                        }
+                    }
+
+                    //se si arriva qui allora abbiamo l'inidirizzo
+                    if (line.type == PatternType.PT_MRILabel_Indirect ||
+                       line.type == PatternType.PT_Label_comma_MRILabel_Indirect ||
+                       line.type == PatternType.PT_Lable_comma_MRIValue_indirect)
+                            addressType = addressing.indirect;
+
+                    ram[LC.getValue()] = instructionAssembler.buildMRIop(instructionAssembler.findMRI(lexem), addressValue, addressType);
+                    LC.increment();
+                }
             }
+            return true;
         }
+      
 
         private static bool OnlyHexInString(string test) //check se nella stringa ci sono solo valori esadecimali (works)
         {
@@ -526,6 +664,7 @@ namespace Assembler
             return System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
             // https://stackoverflow.com/questions/223832/check-a-string-to-see-if-all-characters-are-hexadecimal-values
         }
+
     }
 
 
@@ -540,7 +679,9 @@ namespace Assembler
             MRI.STA,
             MRI.BUN,
             MRI.BSA,
-            MRI.ISZ
+            MRI.ISZ,
+
+            MRI.NOT_INSTR
         };
 
         public static RRI[] RRIops = new RRI[]
@@ -556,13 +697,15 @@ namespace Assembler
             RRI.SNA,
             RRI.SZA,
             RRI.SZE,
-            RRI.HLT
+            RRI.HLT,
         };
 
         public static IOI[] IOIops = new IOI[]
         {
             IOI.INP,
-            IOI.OUT
+            IOI.OUT,
+
+            IOI.NOT_IOIISTR
         };
 
         public static pseudoOPs[] pseudo = new pseudoOPs[]
@@ -572,6 +715,31 @@ namespace Assembler
             pseudoOPs.HEX,
             pseudoOPs.ORG
         };
+
+        public static RRI findRRI(string lexem)
+        {
+            for(int i = 0; i < RRIops.Length; i++)
+            {
+                if(lexem == RRIops[i].ToString())
+                {
+                    return RRIops[i];
+                }    
+            }
+            return RRI.NOT_INSTR;
+        }
+
+        public static MRI findMRI(string lexem)
+        {
+            for (int i = 0; i < MRIops.Length; i++)
+            {
+                if (lexem == MRIops[i].ToString())
+                {
+                    return MRIops[i];
+                }
+            }
+            return MRI.NOT_INSTR;
+        }
+
         public static i16 buildMRIop(MRI instruction, u12 address, addressing I = addressing.direct)
         {
             i16 reg = new i16();

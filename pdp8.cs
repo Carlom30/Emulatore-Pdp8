@@ -40,6 +40,8 @@ namespace Emulatore_Pdp8
         BUN = 0b_100,
         BSA = 0b_101, // the cursed instruction
         ISZ = 0b_110,
+
+        NOT_INSTR
     }
 
     enum RRI //register reference instruction
@@ -56,12 +58,16 @@ namespace Emulatore_Pdp8
         SZA = 0b_0111_0000_0000_0100, // skippa la prossima istruzione se l'accumulatore è uguale a 0
         SZE = 0b_0111_0000_0000_0010, // skippa la prossima istruzione se E è uguale a 0
         HLT = 0b_0111_0000_0000_0001, // spenge la macchina (o termina il programma nel caso della vm)
+
+        NOT_INSTR
     }
 
     enum IOI // I/O instruction set
     {
         INP = 0b_1111_1000_0000_0000, 
         OUT = 0b_1111_0100_0000_0000,
+
+        NOT_IOIISTR
     }
 
     enum pseudoOPs
@@ -86,15 +92,28 @@ namespace Emulatore_Pdp8
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
 
+            pdp8 vm = new pdp8();
+
             //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
             //u12 resutl = labelTabel["sus"];
 
             string[] source = File.ReadAllLines("Source.txt");
 
             LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
-            if(tokenizedSource == null)
+
+            //ritornare la ram da compiler per mantenere separate vm e compilatore
+            bool tryCompile = Compiler.Compile(source, vm.ram);
+            if(tryCompile == false)
             {
-                goto here;
+                Console.WriteLine("");
+                Console.ReadKey();
+
+                return;
+            }
+
+            else
+            {
+                Console.WriteLine("it worked!");
             }
 
             for(int i = 0; i < tokenizedSource.Length; i++)
@@ -111,33 +130,19 @@ namespace Emulatore_Pdp8
                 Console.Write("\n");
             }
 
-            here:
-            Console.WriteLine("");
-            Console.ReadKey();
 
-            return; //test vari per parsing
-
-            pdp8 vm = new pdp8();
-
-            //di seguito i test fatti con la macchina virtuale
-
-            vm.ram[0] = instructionAssembler.buildMRIop(MRI.LDA, new u12(11));
-            vm.ram[1] = instructionAssembler.buildMRIop(MRI.ADD, new u12(10));
-            vm.ram[2] = instructionAssembler.buildRRIop(RRI.CMA);
-            vm.ram[3] = instructionAssembler.buildRRIop(RRI.INC);
-            vm.ram[4] = instructionAssembler.buildMRIop(MRI.STA, new u12(11));
-            vm.ram[5] = instructionAssembler.buildRRIop(RRI.HLT);
-            vm.ram[10].setValue(7);
-            vm.ram[11].setValue(15);
-            //vm.ram[7].setValue(unchecked((short)0b_0111_0000_0000_0001)); //HLT (works)
-            vm.a.setValue(unchecked((short)0b_0000_0000_0000_0000)); //setting scripted dell'accumulatore per testing
+         
+                /*Console.WriteLine("");
+                Console.ReadKey();
+                return;*/ //test vari per parsing
 
 
             vm.run(); //not so much to say
             //vm.addressToMAR();
 
             Printf.printRegisters(vm);
-            Printf.printSpecRam(0, 6, vm.ram);
+            //Printf.printRam(vm.ram);
+            Printf.printSpecRam(0, 20, vm.ram);
             Console.WriteLine("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
