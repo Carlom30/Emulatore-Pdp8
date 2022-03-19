@@ -387,6 +387,35 @@ namespace Assembler
 
             return type;
         }
+
+        public static short parseHex(string lexem)
+        {
+            short value = 0;
+            string uLexem = ""; //lessema senza il negativo
+            int i = 0;
+            bool isNegative = false;
+
+            if (lexem[i] == '-')
+            {
+                i++;
+                isNegative = true;
+            }
+
+            for (int k = i; k < lexem.Length; k++)
+            {
+                uLexem += lexem[k];
+            }
+
+            //da qui ho il valore unsigned, lo parso e poi gli cambio il segno
+            value = short.Parse(uLexem, System.Globalization.NumberStyles.HexNumber);
+            if (isNegative)
+            {
+                value = (short)-value;
+            }
+
+            return value;
+
+        }
     }
 
     class Compiler
@@ -436,7 +465,7 @@ namespace Assembler
                     string label = source[i].pattern[1].lexem;
                     if (lexem == "ORG")
                     {
-                        if (!OnlyHexInString(label))
+                        if (!isHex(label))
                         {
                             Printf.printCompileErr(lineCount, "you can only use hexadecimal value for ORG");
                             return false;
@@ -444,6 +473,11 @@ namespace Assembler
 
                         else
                         {
+                            if(Lexer.parseHex(label) < 0)
+                            {
+                                Printf.printCompileErr(lineCount, "only use positive value for ORG!");
+                                return false;
+                            }
                             LC.setValue(ushort.Parse(label, System.Globalization.NumberStyles.HexNumber));
                             continue;
                         }
@@ -462,9 +496,15 @@ namespace Assembler
                     string label = source[i].pattern[1].lexem;
                     if (lexem == "ORG")
                     {
+                        if (Lexer.parseHex(label) < 0)
+                        {
+                            Printf.printCompileErr(lineCount, "only use positive value for ORG!");
+                            return false;
+                        }
                         LC.setValue(ushort.Parse(label, System.Globalization.NumberStyles.HexNumber)); //andrea: "qui gatta ci cova"
                         continue;
                     }
+
                 }
 
                 else if(source[i].type == PatternType.PT_PseudoOnly)
@@ -557,7 +597,7 @@ namespace Assembler
 
                     else if(pseudo == "DEC")
                     {
-                        if(line.type == PatternType.PT_Pseudo_label)
+                        if(line.type == PatternType.PT_Pseudo_label || line.type == PatternType.PT_Label_comma_Pseudo_Label)
                         {
                             Printf.printCompileErr(lineCount, "you can only use decimal value for DEC");
                             return false;
@@ -570,13 +610,13 @@ namespace Assembler
 
                     else if(pseudo == "HEX")
                     {
-                        if (!OnlyHexInString(value))
+                        if (!isHex(value))
                         {
                             Printf.printCompileErr(lineCount, "syntax ERROR");
                             return false;
                         }
 
-                        ram[LC.getValue()].setValue(short.Parse(value, System.Globalization.NumberStyles.HexNumber));
+                        ram[LC.getValue()].setValue(Lexer.parseHex(value));
                         LC.increment();
                     }
                     //non faccio altri check perché se ci sono errori vengono intercettati nella prima passata
@@ -616,7 +656,8 @@ namespace Assembler
                     LC.increment();
                 }
 
-                else if(line.type == PatternType.PT_MRILabel || line.type == PatternType.PT_MRILabel_Indirect ||
+                else if(line.type == PatternType.PT_MRIValue || line.type == PatternType.PT_MRIValue_Indirect || 
+                        line.type == PatternType.PT_MRILabel || line.type == PatternType.PT_MRILabel_Indirect ||
                         line.type == PatternType.PT_Label_comma_MRILabel || line.type == PatternType.PT_Label_comma_MRILabel_Indirect ||
                         line.type == PatternType.PT_Lable_comma_MRIValue || line.type == PatternType.PT_Lable_comma_MRIValue_indirect)
                 {
@@ -630,7 +671,13 @@ namespace Assembler
                     //per prima cosa controllo se il valore è una label
                     if(!(labelTabel.TryGetValue(address, out addressValue)))
                     {
-                        if(ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addressValue_))
+                        if (Lexer.parseHex(address) < 0)
+                        {
+                            Printf.printCompileErr(lineCount, "negative value is out of bounds");
+                            return false;
+                        }
+
+                        if (ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addressValue_))
                         {
                             //allora è un esadecimale (anche se fosse decimale, comunque lo tratto da esadeciamle
                             addressValue.setValue(addressValue_);
@@ -656,9 +703,31 @@ namespace Assembler
             }
             return true;
         }
+
+
+        public static bool isHex(string test)
+        {
+            bool itIs = true;
+            int i = 0;
+            if (test[i] == '-')
+                i++;
+
+            for(int k = i; i < test.Length; i++)
+            {
+                if ((test[i] >= '0' && test[i] <= '9') || (test[i] >= 'A' && test[i] <= 'F'))
+                    continue;
+                else
+                {
+                    itIs = false;
+                    break;
+                }
+            }
+
+            return itIs;
+        }
       
 
-        private static bool OnlyHexInString(string test) //check se nella stringa ci sono solo valori esadecimali (works)
+        private static bool bruh(string test) //check se nella stringa ci sono solo valori esadecimali (works)
         {
             // For C-style hex notation (0xFF) you can use @"\A\b(0[xX])?[0-9a-fA-F]+\b\Z
             return System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
@@ -698,6 +767,8 @@ namespace Assembler
             RRI.SZA,
             RRI.SZE,
             RRI.HLT,
+
+            RRI.NOT_INSTR
         };
 
         public static IOI[] IOIops = new IOI[]

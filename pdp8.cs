@@ -41,7 +41,7 @@ namespace Emulatore_Pdp8
         BSA = 0b_101, // the cursed instruction
         ISZ = 0b_110,
 
-        NOT_INSTR
+        NOT_INSTR = -1
     }
 
     enum RRI //register reference instruction
@@ -59,7 +59,7 @@ namespace Emulatore_Pdp8
         SZE = 0b_0111_0000_0000_0010, // skippa la prossima istruzione se E è uguale a 0
         HLT = 0b_0111_0000_0000_0001, // spenge la macchina (o termina il programma nel caso della vm)
 
-        NOT_INSTR
+        NOT_INSTR = -1
     }
 
     enum IOI // I/O instruction set
@@ -67,7 +67,7 @@ namespace Emulatore_Pdp8
         INP = 0b_1111_1000_0000_0000, 
         OUT = 0b_1111_0100_0000_0000,
 
-        NOT_IOIISTR
+        NOT_IOIISTR = -1
     }
 
     enum pseudoOPs
@@ -91,7 +91,6 @@ namespace Emulatore_Pdp8
             Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
             Application.Run(new Form1());*/
             Console.WriteLine("hello world!\n");
-
             pdp8 vm = new pdp8();
 
             //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
@@ -142,7 +141,7 @@ namespace Emulatore_Pdp8
 
             Printf.printRegisters(vm);
             //Printf.printRam(vm.ram);
-            Printf.printSpecRam(0, 20, vm.ram);
+            Printf.printSpecRam(0x0, 0x20, vm.ram);
             Console.WriteLine("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows

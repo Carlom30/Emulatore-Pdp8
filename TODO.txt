@@ -2,6 +2,10 @@
 
 TODO
 
-hex non riconosce il segno -
+cambiare nomi a "prima passata" e "seconda passata"
+cambiare tipo di ritorno di compiler in "u12 ram"
+perfezionare "compiler" in modo che sia quantomeno non inguardabile
+continuare i test per la compilazione per eventuali bug del compilatore.
+
 
 
