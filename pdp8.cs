@@ -93,10 +93,28 @@ namespace Emulatore_Pdp8
             Console.WriteLine("hello world!\n");
             pdp8 vm = new pdp8();
 
+            string[] source = null;
             //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
             //u12 resutl = labelTabel["sus"];
+            try
+            {
+                source = File.ReadAllLines("Source.txt");
+            }
+            catch
+            {
+                FileStream fs = File.Create("Source.txt");
+                fs.Close();
+                source = File.ReadAllLines("Source.txt");
+            }
 
-            string[] source = File.ReadAllLines("Source.txt");
+            if (source.Length == 0)
+            {
+                Console.WriteLine("Source is empty");
+                Console.WriteLine("");
+                Console.ReadKey();
+
+                return;
+            }
 
             LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
 
