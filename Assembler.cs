@@ -388,6 +388,27 @@ namespace Assembler
             return type;
         }
 
+        public static bool isHex(string test)
+        {
+            bool itIs = true;
+            int i = 0;
+            if (test[i] == '-')
+                i++;
+
+            for (int k = i; i < test.Length; i++)
+            {
+                if ((test[i] >= '0' && test[i] <= '9') || (test[i] >= 'A' && test[i] <= 'F'))
+                    continue;
+                else
+                {
+                    itIs = false;
+                    break;
+                }
+            }
+
+            return itIs;
+        }
+
         public static short parseHex(string lexem)
         {
             short value = 0;
@@ -465,7 +486,7 @@ namespace Assembler
                     string label = source[i].pattern[1].lexem;
                     if (lexem == "ORG")
                     {
-                        if (!isHex(label))
+                        if (!Lexer.isHex(label))
                         {
                             Printf.printCompileErr(lineCount, "you can only use hexadecimal value for ORG");
                             return false;
@@ -610,7 +631,7 @@ namespace Assembler
 
                     else if(pseudo == "HEX")
                     {
-                        if (!isHex(value))
+                        if (!Lexer.isHex(value))
                         {
                             Printf.printCompileErr(lineCount, "syntax ERROR");
                             return false;
@@ -671,14 +692,15 @@ namespace Assembler
                     //per prima cosa controllo se il valore è una label
                     if(!(labelTabel.TryGetValue(address, out addressValue)))
                     {
-                        if (Lexer.parseHex(address) < 0)
+                      
+                        //if (ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addressValue_))
+                        if(Lexer.isHex(address))
                         {
-                            Printf.printCompileErr(lineCount, "negative value is out of bounds");
-                            return false;
-                        }
-
-                        if (ushort.TryParse(address, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addressValue_))
-                        {
+                            if (Lexer.parseHex(address) < 0)
+                            {
+                                Printf.printCompileErr(lineCount, "negative value is out of bounds");
+                                return false;
+                            }
                             //allora è un esadecimale (anche se fosse decimale, comunque lo tratto da esadeciamle
                             addressValue.setValue(addressValue_);
                         }
@@ -702,28 +724,6 @@ namespace Assembler
                 }
             }
             return true;
-        }
-
-
-        public static bool isHex(string test)
-        {
-            bool itIs = true;
-            int i = 0;
-            if (test[i] == '-')
-                i++;
-
-            for(int k = i; i < test.Length; i++)
-            {
-                if ((test[i] >= '0' && test[i] <= '9') || (test[i] >= 'A' && test[i] <= 'F'))
-                    continue;
-                else
-                {
-                    itIs = false;
-                    break;
-                }
-            }
-
-            return itIs;
         }
       
 
