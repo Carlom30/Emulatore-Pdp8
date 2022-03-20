@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emulatore Pdp8", "Emulatore Pdp8.csproj", "{6C975173-7DDA-4117-8D4A-73B79677ABC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorePdp8", "EmulatorePdp8.csproj", "{6C975173-7DDA-4117-8D4A-73B79677ABC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6C975173-7DDA-4117-8D4A-73B79677ABC0}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Emulatore_Pdp8</RootNamespace>
-    <AssemblyName>Emulatore Pdp8</AssemblyName>
+    <RootNamespace>EmulatorePdp8</RootNamespace>
+    <AssemblyName>EmulatorePdp8</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
