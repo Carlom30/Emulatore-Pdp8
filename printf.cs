@@ -25,12 +25,14 @@ namespace PrintSpace
 
         static public void printRegisters(pdp8 vm)
         {
+            Console.WriteLine("");
             Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg));
             Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg));
             Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg));
             Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg));
             Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0) + " I: " + (vm.i ? 1 : 0) + " E: " + (vm.e ? 1 : 0));
             Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit3_reg));
+            Console.WriteLine("");
         }
 
         //necessito di una funzione che faccia print dall'i-esimo elemento della ram, al j-esimo

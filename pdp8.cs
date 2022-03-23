@@ -87,15 +87,7 @@ namespace Emulatore_Pdp8
         [STAThread]
         static void Main()
         {
-            /*Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
-            Application.Run(new Form1());*/
-            Console.WriteLine("hello world!\n");
-            pdp8 vm = new pdp8();
-
             string[] source = null;
-            //Console.WriteLine(Utility.valueToBin(a, RegType.bit16_reg));
-            //u12 resutl = labelTabel["sus"];
             try
             {
                 source = File.ReadAllLines("Source.txt");
@@ -105,65 +97,59 @@ namespace Emulatore_Pdp8
                 FileStream fs = File.Create("Source.txt");
                 fs.Close();
                 source = File.ReadAllLines("Source.txt");
+                waitForClose("created Source file");
+                return;
             }
 
             if (source.Length == 0)
             {
-                Console.WriteLine("Source is empty");
-                Console.WriteLine("");
-                Console.ReadKey();
-
+                waitForClose("Source can't be empty");
                 return;
             }
 
-            LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
+            //LA ROBA COMMENTATA SOTTO NON VA CANCELLATA
+            /*Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
+            Application.Run(new Form1());*/
+
+            Console.WriteLine("hello world!\n");
+            pdp8 vm = new pdp8();
 
             //ritornare la ram da compiler per mantenere separate vm e compilatore
-            bool tryCompile = Compiler.Compile(source, vm.ram);
-            if(tryCompile == false)
-            {
-                Console.WriteLine("");
-                Console.ReadKey();
+            CompilerData data = Compiler.Compile(source);
+            LineCode[] tokenizedSource = data.tkSource;
 
+            if (!data.completed)
+            {
+                //nessun messaggio, il compilatore avrà di certo già specificato il problema
+                waitForClose("");
                 return;
             }
 
             else
             {
-                Console.WriteLine("it worked!");
+                //Console.WriteLine("it worked!");
+                vm.ram = data.machineCode;
+                vm.pc.setValue(data.programAddress.getValue());
             }
-
-            for(int i = 0; i < tokenizedSource.Length; i++)
-            {
-                if(tokenizedSource[i].type == PatternType.PT_EMPTYLINE)
-                {
-                    continue;
-                }
-
-                for(int j = 0; j < tokenizedSource[i].pattern.Length; j++)
-                {
-                    Console.Write(" " + tokenizedSource[i].pattern[j].type.ToString());
-                }
-                Console.Write("\n");
-            }
-
-
-         
-                /*Console.WriteLine("");
-                Console.ReadKey();
-                return;*/ //test vari per parsing
-
 
             vm.run(); //not so much to say
             //vm.addressToMAR();
 
+            Console.WriteLine("End of programm, printing Registers...");
             Printf.printRegisters(vm);
-            //Printf.printRam(vm.ram);
-            Printf.printSpecRam(0x0, 0x20, vm.ram);
+            Printf.printRam(vm.ram);
+            //Printf.printSpecRam(0x100, 0x10F, vm.ram);
             Console.WriteLine("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
             //Printf.printRam(vm.ram);
+        }
+
+        public static void waitForClose(string log)
+        {
+            Console.WriteLine("\n" + log);
+            Console.ReadKey();
         }
     }
 
@@ -473,6 +459,7 @@ namespace Emulatore_Pdp8
                         break;
                 }
             }
+            Printf.printRegisters(this);
             //altra roba ovviamente, just testing
             return;
         }
@@ -795,7 +782,14 @@ namespace Emulatore_Pdp8
         {
             while (s) //fino a quando la macchina è accesa.
             {
+                bool stepBystep = true; //mi servirà per la parte grafica
+                /*if(stepBystep)
+                {
+                    Console.WriteLine("press any key for the next instruction");
+                    Console.ReadKey();
+                }*/
                 //Console.WriteLine(pc.getValue());
+
                 if(!f && !r)
                 {
                     Console.WriteLine("Fetch");

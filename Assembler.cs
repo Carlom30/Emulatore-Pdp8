@@ -14,14 +14,29 @@ using System.Runtime.InteropServices;
 //siccome i commenti sul pdp8 possono essere aprti ma mai chiusi, allora se trovo un "/" vado a capo boh non lo so aiuto
 namespace Assembler
 {
+    class CompilerData
+    {
+        
+        public i16[] machineCode;
+        public u12 programAddress;
+        public LineCode[] tkSource;
+        
+        public bool completed;
 
+        public CompilerData()
+        {
+            machineCode = new i16[4096];
+            programAddress = new u12(0);
+            completed = false;
+        }
+    }
     struct Token
     {
         public TokenType type;
         public string lexem;
     }
     
-    struct LineCode //qui andrà un puntatore a funzione che serve a sputare il machinecode
+    struct LineCode 
     {
         public Token[] pattern;
         public PatternType type;
@@ -154,8 +169,6 @@ namespace Assembler
             TokenType.TK_Label, TokenType.TK_comma, TokenType.TK_MRI, TokenType.TK_value, TokenType.TK_indirectAddressing
         };
 
-
-
         private static TokenType[][] allPatterns = new TokenType[numberOfpatterns][]
         {
             pattern_00,
@@ -193,8 +206,7 @@ namespace Assembler
             PatternType.PT_MRIValue_Indirect,
             PatternType.PT_Label_comma_pseudoOnly,
             PatternType.PT_Lable_comma_MRIValue,
-            PatternType.PT_Lable_comma_MRIValue_indirect //going mad :DDDDDDDDDDDDDD
-                                                         //dovrebbero essere tutti
+            PatternType.PT_Lable_comma_MRIValue_indirect
         };
 
         private static void removeTabs(string[] source)
@@ -222,7 +234,7 @@ namespace Assembler
                 if(source[i].Length == 0 || source[i][0] == '/')
                 {
                     lineCount++;
-                    continue; //riga vuota
+                    continue; //riga vuota o solo commenti
                 }
 
                 List<Token> line = new List<Token>();
@@ -444,32 +456,46 @@ namespace Assembler
         private static u12 LC = new u12(0);
         private static Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
         private static List<string> labelKeys = new List<string>();
-        public static bool Compile(string[] source, i16[] ram)
+        public static CompilerData Compile(string[] source)
         {
-            LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
-            bool tryFirstStep = false;
-            bool trySecondStep = false;
-            bool compiled = false;
+            CompilerData data = new CompilerData();
 
-            if(tokenizedSource != null)
-                tryFirstStep = primaPassata(tokenizedSource);
-            if (tryFirstStep == true)
-                trySecondStep = secondaPassata(tokenizedSource, ram);
-            //first compiler step
-            //second compiler step
-            return trySecondStep;
+            LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
+            data.tkSource = tokenizedSource;
+
+            if (tokenizedSource != null)
+                data.completed = firstStep(tokenizedSource, data);
+            
+            if (data.completed == true)
+                data.completed = secondStep(tokenizedSource, data.machineCode);
+
+            return data;
         }
 
-        public static bool primaPassata(LineCode[] source)
+        public static bool firstStep(LineCode[] source, CompilerData data)
         {
             int lineCount = 1;
             LC.setValue(0); //durante entramble le passate LC DEVE essere 0, quindi per sicurezza lo setto sempre
+            bool pcSetted = false;
+            bool firstInstrFound = false;
+
             for(int i = 0; i < source.Length; i++)
             {
                 if (i > 0)
                     lineCount++;
 
-                if(source[i].type == PatternType.PT_EMPTYLINE)
+                if (firstInstrFound && !pcSetted)
+                {
+                    data.programAddress.setValue(LC.getValue());
+                    pcSetted = true;
+                }
+
+                if (source[i].type != PatternType.PT_EMPTYLINE)
+                {
+                    firstInstrFound = true;
+                }
+
+                if (source[i].type == PatternType.PT_EMPTYLINE)
                 {
                     continue;
                 }
@@ -546,7 +572,8 @@ namespace Assembler
                 LC.increment();
             }
 
-            for(int i = 0; i < labelKeys.Count; i++)
+            Console.WriteLine("Printing Found Labels with Addresses\n");
+            for (int i = 0; i < labelKeys.Count; i++)
             {
                 Console.WriteLine(labelKeys[i] + " " + labelTabel[labelKeys[i]].getValue());
             }
@@ -556,13 +583,17 @@ namespace Assembler
             return true;
         }
         
-        public static bool secondaPassata(LineCode[] source, i16[] ram) //Implementazione passaggi assembler delle dispende del prof navarra
+        public static bool secondStep(LineCode[] source, i16[] ram) //Implementazione passaggi assembler delle dispende del prof navarra
         {
             LC.setValue(0);
             int lineCount = 1;
 
             for(int i = 0; i < source.Length; i++)
             {
+
+                if (i > 0)
+                    lineCount++;
+
                 if (source[i].type == PatternType.PT_EMPTYLINE)
                 {
                     continue;
@@ -581,9 +612,6 @@ namespace Assembler
 
                     k++;
                 }
-
-                if (i > 0)
-                    lineCount++;
 
                 //END
                 if(line.type == PatternType.PT_PseudoOnly || line.type == PatternType.PT_Label_comma_pseudoOnly)
@@ -642,8 +670,9 @@ namespace Assembler
                     }
                     //non faccio altri check perché se ci sono errori vengono intercettati nella prima passata
                 }
-                //PSEUDO FATTE IN TEORIA, PASSIAMO ALLE ISTRUZIONI
-                //RRI
+
+                // PSEUDO FATTE IN TEORIA, PASSIAMO ALLE ISTRUZIONI
+                // RRI/IOI
                 else if(line.type == PatternType.PT_RRIIOIonly || line.type == PatternType.PT_Label_comma_RRIIOI)
                 {   
                     string lexem = line.pattern[k].lexem;
@@ -669,7 +698,7 @@ namespace Assembler
                     RRI instr = instructionAssembler.findRRI(lexem);
                     if(instr == RRI.NOT_INSTR)
                     {
-                        Console.WriteLine("something went wrong lmao");
+                        Console.WriteLine("something went wrong");
                         return false;
                     }
 
@@ -724,14 +753,6 @@ namespace Assembler
                 }
             }
             return true;
-        }
-      
-
-        private static bool bruh(string test) //check se nella stringa ci sono solo valori esadecimali (works)
-        {
-            // For C-style hex notation (0xFF) you can use @"\A\b(0[xX])?[0-9a-fA-F]+\b\Z
-            return System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
-            // https://stackoverflow.com/questions/223832/check-a-string-to-see-if-all-characters-are-hexadecimal-values
         }
 
     }
