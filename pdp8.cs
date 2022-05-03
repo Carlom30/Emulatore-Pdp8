@@ -81,6 +81,8 @@ namespace Emulatore_Pdp8
     static class Program
     {
         public static string[] source;
+
+        //singleton vm
         private static pdp8 vm;
         static int nSteps = -1; //se -1 allora non ci sono step da compiere
 
@@ -98,6 +100,12 @@ namespace Emulatore_Pdp8
         public static pdp8 getVm()
         {
             return vm;
+        }
+
+        public static void setVMParameters(i16[] ram, u12 pc)
+        {
+            vm.ram = ram;
+            vm.pc.setValue(pc.getValue());
         }
         /// <summary>
         /// The main entry point for the application.
@@ -128,52 +136,7 @@ namespace Emulatore_Pdp8
         [STAThread]
         static void Main()
         {
-            /*source = null;
-            try
-            {
-                source = File.ReadAllLines("Source.txt");
-            }
-            catch
-            {
-                FileStream fs = File.Create("Source.txt");
-                fs.Close();
-                source = File.ReadAllLines("Source.txt");
-                waitForClose("created Source file");
-                return;
-            }
-
-            if (source.Length == 0)
-            {
-                waitForClose("Source can't be empty");
-                return;
-            }*/
-
-            //la vm va create PRIMA che esiste il form
             vm = new pdp8();
-            //LA ROBA COMMENTATA SOTTO NON VA CANCELLATA
-
-            Console.WriteLine("hello world!\n");
-            
-
-            
-            //ritornare la ram da compiler per mantenere separate vm e compilatore
-            /*CompilerData data = Compiler.Compile(source);
-            LineCode[] tokenizedSource = data.tkSource;
-
-            if (!data.completed)
-            {
-                //nessun messaggio, il compilatore avrà di certo già specificato il problema
-                waitForClose("");
-                return;
-            }
-
-            else
-            {
-                //Console.WriteLine("it worked!");
-                vm.ram = data.machineCode;
-                vm.pc.setValue(data.programAddress.getValue());
-            }*/
-
             //vm.addressToMAR();
 
             Application.EnableVisualStyles();

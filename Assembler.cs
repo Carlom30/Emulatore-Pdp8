@@ -13,8 +13,6 @@ using System.Runtime.InteropServices;
 
 namespace Assembler
 {
-
-    
     class CompilerData
     {
         
@@ -455,11 +453,23 @@ namespace Assembler
 
     class Compiler
     {
+        //singleton CompilerData
+        private static CompilerData compilerData;
+
+        public static CompilerData getCompilerData()
+        {
+            return compilerData;
+        }
+
         private static u12 LC = new u12(0);
         private static Dictionary<string, u12> labelTabel;
         private static List<string> labelKeys;
-        public static CompilerData Compile(string[] source)
+        public static void Compile(string[] source)
         {
+            if(source == null)
+            {
+                return;
+            }
             labelTabel = new Dictionary<string, u12>();
             labelKeys = new List<string>();
             CompilerData data = new CompilerData();
@@ -473,7 +483,12 @@ namespace Assembler
             if (data.completed == true)
                 data.completed = secondStep(tokenizedSource, data.machineCode);
 
-            return data;
+            if(data.completed)
+            {
+                compilerData = data;
+                Program.setVMParameters(compilerData.machineCode, compilerData.programAddress);
+                Printf.printRamOnBuffer(compilerData);
+            }
         }
 
         public static bool firstStep(LineCode[] source, CompilerData data)

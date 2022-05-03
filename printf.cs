@@ -11,18 +11,23 @@ namespace PrintSpace
 {
     class Printf
     {
-        static List<string> ramBuffer;
-        static List<String> logBuffer;
+        static string[] ramBuffer;
+        static List<string> logBuffer;
 
         public static void inizializeBuffers()
         {
-            ramBuffer = new List<string>();
+            ramBuffer = new string[4096];
             logBuffer = new List<string>();
         }
 
-        public static List<string> getLogBuffer()
+        public static string[] getLogBuffer()
         {
-            return logBuffer;
+            return logBuffer.ToArray();
+        }
+
+        public static string[] getRamBuffer()
+        {
+            return ramBuffer;
         }
 
         public static void printOnLog(string log)
@@ -31,17 +36,15 @@ namespace PrintSpace
         }
 
 
-        static public string[] printRamOnBuffer(CompilerData compilationData)
+        static public void printRamOnBuffer(CompilerData compilationData)
         {
             i16[] ram = compilationData.machineCode;
             string[] ramToString = new string[ram.Length];
             for (int i = 0; i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                ramToString[i] = "Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction();
-            }
-
-            return ramToString;
+                ramBuffer[i] = ("Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction());
+            } 
         }
 
         static public void printRam(i16[] ram)

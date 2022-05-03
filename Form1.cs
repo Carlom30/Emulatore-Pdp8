@@ -77,14 +77,14 @@ namespace Emulatore_Pdp8
                 LOG.AppendText("no file selected, click 'add source' and select a .txt file" + Environment.NewLine);
                 return;
             }
-            update();
-            pdp8 vm = Program.getVm();
-            CompilerData data = Compiler.Compile(Program.source);
-            LineCode[] tokenizedSource = data.tkSource;
 
-            if (!data.completed)
+            update();
+            Compiler.Compile(Program.source);
+            CompilerData data = Compiler.getCompilerData();
+
+            if (data == null || !data.completed)
             {
-                string[] logBuffer = Printf.getLogBuffer().ToArray();
+                string[] logBuffer = Printf.getLogBuffer();
                 for(int i = 0; i < logBuffer.Length; i++)
                 {
                     LOG.AppendText(logBuffer[i] + Environment.NewLine);
@@ -93,14 +93,11 @@ namespace Emulatore_Pdp8
 
             else
             {
-                //Console.WriteLine("it worked!");
-                vm.ram = data.machineCode;
-                vm.pc.setValue(data.programAddress.getValue());
-                data.tkSource = Utility.noEmptyTkSource(data.tkSource);
-                string[] stringRam = Printf.printRamOnBuffer(data);
+                string[] ramBuffer = Printf.getRamBuffer();
+                RAM.Text = "";
                 for(int i = 0; i < 0x1a; i++)
                 {
-                    RAM.AppendText(stringRam[i] + Environment.NewLine);
+                    RAM.AppendText(ramBuffer[i] + Environment.NewLine);
                 }
             }
         }
@@ -149,10 +146,20 @@ namespace Emulatore_Pdp8
             }
 
         }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            LOG.Text = "";
+        }
 
         private void label4_Click(object sender, EventArgs e)
         {
 
         }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

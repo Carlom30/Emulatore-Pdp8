@@ -38,7 +38,7 @@ namespace Emulatore_Pdp8
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.CleanLog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // RAM
@@ -79,18 +79,19 @@ namespace Emulatore_Pdp8
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(8, 444);
+            this.label2.Location = new System.Drawing.Point(8, 452);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 20);
             this.label2.TabIndex = 3;
             this.label2.Text = "LOG";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // LOG
             // 
             this.LOG.BackColor = System.Drawing.SystemColors.WindowText;
             this.LOG.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LOG.ForeColor = System.Drawing.SystemColors.Window;
-            this.LOG.Location = new System.Drawing.Point(12, 467);
+            this.LOG.Location = new System.Drawing.Point(12, 475);
             this.LOG.Multiline = true;
             this.LOG.Name = "LOG";
             this.LOG.Size = new System.Drawing.Size(680, 228);
@@ -142,15 +143,16 @@ namespace Emulatore_Pdp8
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button3
+            // CleanLog
             // 
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(598, 701);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 29);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "Clean Log";
-            this.button3.UseVisualStyleBackColor = true;
+            this.CleanLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CleanLog.Location = new System.Drawing.Point(12, 709);
+            this.CleanLog.Name = "CleanLog";
+            this.CleanLog.Size = new System.Drawing.Size(94, 29);
+            this.CleanLog.TabIndex = 9;
+            this.CleanLog.Text = "Clean Log";
+            this.CleanLog.UseVisualStyleBackColor = true;
+            this.CleanLog.Click += new System.EventHandler(this.button3_Click);
             // 
             // Form1
             // 
@@ -158,7 +160,7 @@ namespace Emulatore_Pdp8
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(1273, 771);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.CleanLog);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
@@ -187,7 +189,7 @@ namespace Emulatore_Pdp8
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button CleanLog;
     }
 }
 
