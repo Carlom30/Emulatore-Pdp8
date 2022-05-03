@@ -5,11 +5,45 @@ using System.Text;
 using System.Threading.Tasks;
 using Emulatore_Pdp8;
 using UtilityStuff;
+using Assembler;
 
 namespace PrintSpace
 {
     class Printf
     {
+        static List<string> ramBuffer;
+        static List<String> logBuffer;
+
+        public static void inizializeBuffers()
+        {
+            ramBuffer = new List<string>();
+            logBuffer = new List<string>();
+        }
+
+        public static List<string> getLogBuffer()
+        {
+            return logBuffer;
+        }
+
+        public static void printOnLog(string log)
+        {
+            logBuffer.Add(log);
+        }
+
+
+        static public string[] printRamOnBuffer(CompilerData compilationData)
+        {
+            i16[] ram = compilationData.machineCode;
+            string[] ramToString = new string[ram.Length];
+            for (int i = 0; i < ram.Length; i++)
+            {
+                string toBin = Convert.ToString(ram[i].getValue(), 2);
+                ramToString[i] = "Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction();
+            }
+
+            return ramToString;
+        }
+
         static public void printRam(i16[] ram)
         {
             for(int i = 0; i < ram.Length; i++)
@@ -17,6 +51,7 @@ namespace PrintSpace
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
                 Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg));
                 Console.Write("\n");
+                
                 //Console.WriteLine(toBin);
             }
 
@@ -48,7 +83,9 @@ namespace PrintSpace
 
         public static void printCompileErr(int line, string logToPrint)
         {
-            Console.WriteLine("Line " + line + ": " + logToPrint);
+            string log = "Line " + line + ": " + logToPrint;
+            Console.WriteLine(log);
+            logBuffer.Add(log);
         }
     }
 }

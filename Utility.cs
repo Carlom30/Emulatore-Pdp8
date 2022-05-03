@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Emulatore_Pdp8;
+using Assembler;
 
 namespace UtilityStuff
 {
@@ -44,6 +45,21 @@ namespace UtilityStuff
                 toBin += Utility.isBitSet(value, i) ? 1 : 0;
 
             return toBin;
+        }
+
+        public static LineCode[] noEmptyTkSource(LineCode[] tkSource)
+        {
+            int trueLength = 0;
+            List<LineCode> noEmptyTK = new List<LineCode>();
+            for(int i = 0; i < tkSource.Length; i++)
+            {
+                if(tkSource[i].type != PatternType.PT_EMPTYLINE)
+                {
+                    noEmptyTK.Add(tkSource[i]);
+                }
+            }
+
+            return noEmptyTK.ToArray();
         }
     }
 }

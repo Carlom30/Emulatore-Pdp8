@@ -78,16 +78,57 @@ namespace Emulatore_Pdp8
         HEX
     }
 
-    class Program
+    static class Program
     {
-        
+        public static string[] source;
+        private static pdp8 vm;
+        static int nSteps = -1; //se -1 allora non ci sono step da compiere
+
+        public static int getnSteps()
+        {
+            return nSteps;
+        }
+
+        public static void setnSteps(int n)
+        {
+            nSteps = n;
+        }
+
+
+        public static pdp8 getVm()
+        {
+            return vm;
+        }
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        
+        public static string[] readSource(OpenFileDialog sourceFile)
+        {
+
+            try
+            {
+                source = File.ReadAllLines(sourceFile.FileName);
+            }
+            catch
+            {
+                Printf.printOnLog("no File Selected");
+                return null;
+            }
+
+            if (source.Length == 0)
+            {
+                waitForClose("Source can't be empty");
+                return null;
+            }
+
+            return source;
+        }
+        
         [STAThread]
         static void Main()
         {
-            string[] source = null;
+            /*source = null;
             try
             {
                 source = File.ReadAllLines("Source.txt");
@@ -105,18 +146,18 @@ namespace Emulatore_Pdp8
             {
                 waitForClose("Source can't be empty");
                 return;
-            }
+            }*/
 
+            //la vm va create PRIMA che esiste il form
+            vm = new pdp8();
             //LA ROBA COMMENTATA SOTTO NON VA CANCELLATA
-            /*Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
-            Application.Run(new Form1());*/
 
             Console.WriteLine("hello world!\n");
-            pdp8 vm = new pdp8();
+            
 
+            
             //ritornare la ram da compiler per mantenere separate vm e compilatore
-            CompilerData data = Compiler.Compile(source);
+            /*CompilerData data = Compiler.Compile(source);
             LineCode[] tokenizedSource = data.tkSource;
 
             if (!data.completed)
@@ -131,15 +172,20 @@ namespace Emulatore_Pdp8
                 //Console.WriteLine("it worked!");
                 vm.ram = data.machineCode;
                 vm.pc.setValue(data.programAddress.getValue());
-            }
+            }*/
 
-            vm.run(); //not so much to say
             //vm.addressToMAR();
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
+            Application.Run(new Form1());
+
+            vm.run(); //not so much to say
+            
             Console.WriteLine("End of programm, printing Registers...");
             Printf.printRegisters(vm);
-            Printf.printRam(vm.ram);
-            //Printf.printSpecRam(0x100, 0x10F, vm.ram);
+            //Printf.printRam(vm.ram);
+            Printf.printSpecRam(0x0, 0x30F, vm.ram);
             Console.WriteLine("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
@@ -156,11 +202,16 @@ namespace Emulatore_Pdp8
     struct i16 //tutta la roba sotto non dovrebbe servire, ma la faccio in caso... beh, servisse :D
     {
         private short value;
+        private string instruction;
+        private string label;
 
         public i16(short firstValue)
         {
             value = 0;
+            instruction = "";
+            label = "";
             setValue(firstValue);
+            
         }
     
         public short getValue()
@@ -171,6 +222,16 @@ namespace Emulatore_Pdp8
         public void setValue(short newValue)
         {
             value = newValue;
+        }
+
+        public string getInstruction()
+        {
+            return instruction;
+        }
+
+        public void setInstruction(string instr)
+        {
+            instruction = instr;
         }
     }
 

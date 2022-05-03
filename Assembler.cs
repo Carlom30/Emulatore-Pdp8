@@ -11,9 +11,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 
-//siccome i commenti sul pdp8 possono essere aprti ma mai chiusi, allora se trovo un "/" vado a capo boh non lo so aiuto
 namespace Assembler
 {
+
+    
     class CompilerData
     {
         
@@ -221,6 +222,7 @@ namespace Assembler
         {
             int lineCount = 1;
             removeTabs(source);
+
             LineCode[] tokenizedSource = new LineCode[source.Length];
 
             for(int i = 0; i < tokenizedSource.Length; i++) //per essere sicuro.
@@ -454,10 +456,12 @@ namespace Assembler
     class Compiler
     {
         private static u12 LC = new u12(0);
-        private static Dictionary<string, u12> labelTabel = new Dictionary<string, u12>();
-        private static List<string> labelKeys = new List<string>();
+        private static Dictionary<string, u12> labelTabel;
+        private static List<string> labelKeys;
         public static CompilerData Compile(string[] source)
         {
+            labelTabel = new Dictionary<string, u12>();
+            labelKeys = new List<string>();
             CompilerData data = new CompilerData();
 
             LineCode[] tokenizedSource = Lexer.tokenizeSource(source);
@@ -742,13 +746,14 @@ namespace Assembler
                         }
                     }
 
-                    //se si arriva qui allora abbiamo l'inidirizzo
+                    //se si arriva qui allora abbiamo l'indirizzo
                     if (line.type == PatternType.PT_MRILabel_Indirect ||
                        line.type == PatternType.PT_Label_comma_MRILabel_Indirect ||
                        line.type == PatternType.PT_Lable_comma_MRIValue_indirect)
                             addressType = addressing.indirect;
 
                     ram[LC.getValue()] = instructionAssembler.buildMRIop(instructionAssembler.findMRI(lexem), addressValue, addressType);
+                    ram[LC.getValue()].setInstruction(lexem);
                     LC.increment();
                 }
             }
