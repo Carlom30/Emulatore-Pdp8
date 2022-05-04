@@ -13,11 +13,13 @@ namespace PrintSpace
     {
         static string[] ramBuffer;
         static List<string> logBuffer;
+        static string[] registersBuffer;
 
         public static void inizializeBuffers()
         {
             ramBuffer = new string[4096];
             logBuffer = new List<string>();
+            registersBuffer = new string[10];
         }
 
         public static string[] getLogBuffer()
@@ -29,6 +31,9 @@ namespace PrintSpace
         {
             return ramBuffer;
         }
+
+        public static string[] getRegisterBuffer() 
+            => registersBuffer;
 
         public static void printOnLog(string log)
         {

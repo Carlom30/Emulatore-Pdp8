@@ -23,11 +23,20 @@ namespace Emulatore_Pdp8
                      
          */
         OpenFileDialog sourceFile = null;
+        int nStepsValue = 0;
 
+        public int getNsteps() => nStepsValue;
+        public bool stepByStepIsEnabeld() => checkBox_StepByStep.Enabled;
         private void update()
         {
             Printf.inizializeBuffers();
-            Program.source = Program.readSource(sourceFile);
+            Program.source = Program.readSource(sourceFile); //wtf why tf did i do this??
+        }
+
+        private void changeStepByStepComponentsStatus()
+        {
+            plus.Enabled = !plus.Enabled;
+            mines.Enabled = !mines.Enabled;
         }
 
         public Form1()
@@ -38,6 +47,11 @@ namespace Emulatore_Pdp8
         private void Form1_Load(object sender, EventArgs e)
         {
             //update();
+            nSteps.Text = nStepsValue.ToString();
+            nSteps.ReadOnly = true;
+            mines.Enabled = false;
+            plus.Enabled = false;
+
             RAM.ScrollBars = ScrollBars.Both;
             RAM.WordWrap = false;
             RAM.ReadOnly = true;
@@ -79,7 +93,11 @@ namespace Emulatore_Pdp8
             }
 
             update();
+
+            //-----------------------------------
             Compiler.Compile(Program.source);
+            //-----------------------------------
+            
             CompilerData data = Compiler.getCompilerData();
 
             if (data == null || !data.completed)
@@ -95,10 +113,12 @@ namespace Emulatore_Pdp8
             {
                 string[] ramBuffer = Printf.getRamBuffer();
                 RAM.Text = "";
-                for(int i = 0; i < 0x1a; i++)
+                string joinedRamBuffer = string.Join(Environment.NewLine, ramBuffer);
+                RAM.AppendText(joinedRamBuffer);
+                /*for(int i = 0; i < 0x1a; i++)
                 {
                     RAM.AppendText(ramBuffer[i] + Environment.NewLine);
-                }
+                }*/
             }
         }
         private void button1_Click_1(object sender, EventArgs e)
@@ -144,22 +164,50 @@ namespace Emulatore_Pdp8
                     Close();
                 }
             }
+            else
+            {
+                sourceFile = null;
+            }
 
         }
         private void button3_Click(object sender, EventArgs e)
         {
             LOG.Text = "";
         }
+        private void plus_Click(object sender, EventArgs e)
+        {
+            if(nStepsValue < 4096)
+                nStepsValue++;
+            nSteps.Text = nStepsValue.ToString();
+        }
+        private void mines_Click(object sender, EventArgs e)
+        {
+            if(nStepsValue > 0)
+                nStepsValue--;
+            nSteps.Text = nStepsValue.ToString();
+        }
+        private void nSteps_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+
+        }
 
         private void label4_Click(object sender, EventArgs e)
         {
 
         }
-
         private void label2_Click(object sender, EventArgs e)
         {
 
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            changeStepByStepComponentsStatus();
+        }
     }
 }

@@ -39,6 +39,11 @@ namespace Emulatore_Pdp8
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.CleanLog = new System.Windows.Forms.Button();
+            this.plus = new System.Windows.Forms.Button();
+            this.mines = new System.Windows.Forms.Button();
+            this.nSteps = new System.Windows.Forms.TextBox();
+            this.Slabel_nSteps = new System.Windows.Forms.Label();
+            this.checkBox_StepByStep = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // RAM
@@ -67,7 +72,7 @@ namespace Emulatore_Pdp8
             // CompilerButton
             // 
             this.CompilerButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CompilerButton.Location = new System.Drawing.Point(1081, 111);
+            this.CompilerButton.Location = new System.Drawing.Point(733, 537);
             this.CompilerButton.Name = "CompilerButton";
             this.CompilerButton.Size = new System.Drawing.Size(75, 34);
             this.CompilerButton.TabIndex = 2;
@@ -89,7 +94,7 @@ namespace Emulatore_Pdp8
             // LOG
             // 
             this.LOG.BackColor = System.Drawing.SystemColors.WindowText;
-            this.LOG.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LOG.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LOG.ForeColor = System.Drawing.SystemColors.Window;
             this.LOG.Location = new System.Drawing.Point(12, 475);
             this.LOG.Multiline = true;
@@ -124,7 +129,7 @@ namespace Emulatore_Pdp8
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(1081, 151);
+            this.button1.Location = new System.Drawing.Point(733, 669);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 34);
             this.button1.TabIndex = 7;
@@ -135,7 +140,7 @@ namespace Emulatore_Pdp8
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(1081, 49);
+            this.button2.Location = new System.Drawing.Point(733, 475);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 56);
             this.button2.TabIndex = 8;
@@ -150,9 +155,66 @@ namespace Emulatore_Pdp8
             this.CleanLog.Name = "CleanLog";
             this.CleanLog.Size = new System.Drawing.Size(94, 29);
             this.CleanLog.TabIndex = 9;
-            this.CleanLog.Text = "Clean Log";
+            this.CleanLog.Text = "Log Del";
             this.CleanLog.UseVisualStyleBackColor = true;
             this.CleanLog.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // plus
+            // 
+            this.plus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.plus.Location = new System.Drawing.Point(949, 537);
+            this.plus.Name = "plus";
+            this.plus.Size = new System.Drawing.Size(34, 34);
+            this.plus.TabIndex = 11;
+            this.plus.Text = "+";
+            this.plus.UseVisualStyleBackColor = true;
+            this.plus.Click += new System.EventHandler(this.plus_Click);
+            // 
+            // mines
+            // 
+            this.mines.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mines.Location = new System.Drawing.Point(858, 537);
+            this.mines.Name = "mines";
+            this.mines.Size = new System.Drawing.Size(34, 34);
+            this.mines.TabIndex = 12;
+            this.mines.Text = "-";
+            this.mines.UseVisualStyleBackColor = true;
+            this.mines.Click += new System.EventHandler(this.mines_Click);
+            // 
+            // nSteps
+            // 
+            this.nSteps.BackColor = System.Drawing.SystemColors.WindowText;
+            this.nSteps.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nSteps.ForeColor = System.Drawing.SystemColors.Window;
+            this.nSteps.Location = new System.Drawing.Point(898, 537);
+            this.nSteps.Multiline = true;
+            this.nSteps.Name = "nSteps";
+            this.nSteps.Size = new System.Drawing.Size(45, 34);
+            this.nSteps.TabIndex = 13;
+            this.nSteps.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.nSteps.TextChanged += new System.EventHandler(this.nSteps_TextChanged);
+            // 
+            // Slabel_nSteps
+            // 
+            this.Slabel_nSteps.AutoSize = true;
+            this.Slabel_nSteps.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Slabel_nSteps.Location = new System.Drawing.Point(894, 514);
+            this.Slabel_nSteps.Name = "Slabel_nSteps";
+            this.Slabel_nSteps.Size = new System.Drawing.Size(60, 20);
+            this.Slabel_nSteps.TabIndex = 14;
+            this.Slabel_nSteps.Text = "nSteps";
+            // 
+            // checkBox_StepByStep
+            // 
+            this.checkBox_StepByStep.AutoSize = true;
+            this.checkBox_StepByStep.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox_StepByStep.Location = new System.Drawing.Point(858, 475);
+            this.checkBox_StepByStep.Name = "checkBox_StepByStep";
+            this.checkBox_StepByStep.Size = new System.Drawing.Size(122, 24);
+            this.checkBox_StepByStep.TabIndex = 15;
+            this.checkBox_StepByStep.Text = "Step By Step";
+            this.checkBox_StepByStep.UseVisualStyleBackColor = true;
+            this.checkBox_StepByStep.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // Form1
             // 
@@ -160,6 +222,11 @@ namespace Emulatore_Pdp8
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(1273, 771);
+            this.Controls.Add(this.checkBox_StepByStep);
+            this.Controls.Add(this.Slabel_nSteps);
+            this.Controls.Add(this.nSteps);
+            this.Controls.Add(this.mines);
+            this.Controls.Add(this.plus);
             this.Controls.Add(this.CleanLog);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -190,6 +257,11 @@ namespace Emulatore_Pdp8
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button CleanLog;
+        private System.Windows.Forms.Button plus;
+        private System.Windows.Forms.Button mines;
+        private System.Windows.Forms.TextBox nSteps;
+        private System.Windows.Forms.Label Slabel_nSteps;
+        private System.Windows.Forms.CheckBox checkBox_StepByStep;
     }
 }
 

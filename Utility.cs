@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Emulatore_Pdp8;
 using Assembler;
+using System.Windows.Forms;
 
 namespace UtilityStuff
 {
@@ -60,6 +61,16 @@ namespace UtilityStuff
             }
 
             return noEmptyTK.ToArray();
+        }
+
+
+        //utility di form
+
+        //this function go on newline by definition
+        public static void updateTextBox(TextBox textBox, string text)
+        {
+            textBox.Text = "";
+            textBox.AppendText(text + Environment.NewLine);
         }
     }
 }
