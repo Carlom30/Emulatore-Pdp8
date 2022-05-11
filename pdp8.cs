@@ -120,7 +120,7 @@ namespace Emulatore_Pdp8
             }
             catch
             {
-                Printf.printOnLog("no File Selected");
+                Printf.printLogOnBuffer("no File Selected");
                 return null;
             }
 

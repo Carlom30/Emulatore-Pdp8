@@ -2,10 +2,6 @@
 
 TODO
 
-cambiare nomi a "prima passata" e "seconda passata"
-cambiare tipo di ritorno di compiler in "u12 ram"
-perfezionare "compiler" in modo che sia quantomeno non inguardabile
-continuare i test per la compilazione per eventuali bug del compilatore.
-
+aggiornare le textBox in modo che ci siano le label di "c'è scritto" nelle text box, incima ad esse, in modo che non siano noiosamente ridondanti
 
 

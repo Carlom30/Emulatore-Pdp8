@@ -488,6 +488,7 @@ namespace Assembler
                 compilerData = data;
                 Program.setVMParameters(compilerData.machineCode, compilerData.programAddress);
                 Printf.printRamOnBuffer(compilerData);
+                Printf.printRegisters(Program.getVm());
             }
         }
 
@@ -672,6 +673,7 @@ namespace Assembler
                         }
 
                         ram[LC.getValue()].setValue(short.Parse(value)); //valore inserito nella ram
+                        ram[LC.getValue()].setInstruction(value);
                         LC.increment();
  
                     }
@@ -685,6 +687,7 @@ namespace Assembler
                         }
 
                         ram[LC.getValue()].setValue(Lexer.parseHex(value));
+                        ram[LC.getValue()].setInstruction(value);
                         LC.increment();
                     }
                     //non faccio altri check perché se ci sono errori vengono intercettati nella prima passata
@@ -709,7 +712,9 @@ namespace Assembler
                     if(istr != IOI.NOT_IOIISTR)
                     {
                         ram[LC.getValue()].setValue(instructionAssembler.buildIOIop(istr).getValue());
+                        ram[LC.getValue()].setInstruction(lexem);
                         LC.increment();
+                        
                         continue;
                     }
 
@@ -722,7 +727,9 @@ namespace Assembler
                     }
 
                     ram[LC.getValue()].setValue(instructionAssembler.buildRRIop(instr).getValue());
+                    ram[LC.getValue()].setInstruction(lexem);
                     LC.increment();
+                    
                 }
 
                 else if(line.type == PatternType.PT_MRIValue || line.type == PatternType.PT_MRIValue_Indirect || 

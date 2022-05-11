@@ -103,7 +103,7 @@ namespace Emulatore_Pdp8
             if (data == null || !data.completed)
             {
                 string[] logBuffer = Printf.getLogBuffer();
-                for(int i = 0; i < logBuffer.Length; i++)
+                for (int i = 0; i < logBuffer.Length; i++)
                 {
                     LOG.AppendText(logBuffer[i] + Environment.NewLine);
                 }
@@ -112,9 +112,17 @@ namespace Emulatore_Pdp8
             else
             {
                 string[] ramBuffer = Printf.getRamBuffer();
+                string[] registerBuffer = Printf.getRegisterBuffer();
                 RAM.Text = "";
+                REGISTERS.Text = "";
                 string joinedRamBuffer = string.Join(Environment.NewLine, ramBuffer);
-                RAM.AppendText(joinedRamBuffer);
+                string joinedRegisterBuffer = string.Join(Environment.NewLine + Environment.NewLine, registerBuffer);
+                //RAM.AppendText(joinedRamBuffer);
+                RAM.Text = joinedRamBuffer;
+                REGISTERS.Text = joinedRegisterBuffer;
+                //RAM.Select(0, 0);
+
+                //RAM.AutoScrollOffset = new Point(0, 0);
                 /*for(int i = 0; i < 0x1a; i++)
                 {
                     RAM.AppendText(ramBuffer[i] + Environment.NewLine);

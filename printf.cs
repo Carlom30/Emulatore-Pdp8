@@ -35,9 +35,14 @@ namespace PrintSpace
         public static string[] getRegisterBuffer() 
             => registersBuffer;
 
-        public static void printOnLog(string log)
+        public static void printLogOnBuffer(string log)
         {
             logBuffer.Add(log);
+        }
+
+        public static void printRegisterOnBuffer(string[] registers)
+        {
+            registersBuffer = registers;
         }
 
 
@@ -45,10 +50,12 @@ namespace PrintSpace
         {
             i16[] ram = compilationData.machineCode;
             string[] ramToString = new string[ram.Length];
-            for (int i = 0; i < ram.Length; i++)
+            int k = 0;
+            for (int i = compilationData.programAddress.getValue(); i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                ramBuffer[i] = ("Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction());
+                ramBuffer[k] = ("Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction());
+                k++;
             } 
         }
 
@@ -68,14 +75,31 @@ namespace PrintSpace
 
         static public void printRegisters(pdp8 vm)
         {
-            Console.WriteLine("");
+
+            string[] registers =
+            {
+                " MBR\tDEC " + vm.mbr.getValue() + "\tBIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg),
+                " A\tDEC " + vm.a.getValue() + "\tBIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg),
+                " MAR\tDEC " + vm.mar.getValue() + "\tBIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg),
+                " PC\tDEC " + vm.pc.getValue() + "\tBIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg),
+                " S\t" + (vm.s ? 1 : 0),
+                " F\t" + (vm.f ? 1 : 0),
+                " R\t" + (vm.r ? 1 : 0),
+                " I\t" + (vm.i ? 1 : 0),
+                " E\t" + (vm.e ? 1 : 0),
+                " OPR\t" + Utility.valueToBin(vm.opr, RegType.bit3_reg)
+            };
+
+            printRegisterOnBuffer(registers);
+            /*Console.WriteLine("");
             Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg));
             Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg));
             Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg));
             Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg));
             Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0) + " I: " + (vm.i ? 1 : 0) + " E: " + (vm.e ? 1 : 0));
             Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit3_reg));
-            Console.WriteLine("");
+            Console.WriteLine("");*/
+
         }
 
         //necessito di una funzione che faccia print dall'i-esimo elemento della ram, al j-esimo
@@ -93,7 +117,7 @@ namespace PrintSpace
         {
             string log = "Line " + line + ": " + logToPrint;
             Console.WriteLine(log);
-            logBuffer.Add(log);
+            printLogOnBuffer(log);
         }
     }
 }
