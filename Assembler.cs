@@ -522,8 +522,18 @@ namespace Assembler
 
                 else if(source[i].pattern[0].type == TokenType.TK_Label) //ovvero, se il primo elemento della riga è una label
                 {
-                    labelTabel.Add(source[i].pattern[0].lexem, new u12(LC.getValue()));
+                    try
+                    {
+                        labelTabel.Add(source[i].pattern[0].lexem, new u12(LC.getValue()));
+                    }
+
+                    catch
+                    {
+                        Printf.printCompileErr(lineCount, "Label alredy exist");
+                        return false;
+                    }
                     labelKeys.Add(source[i].pattern[0].lexem);
+                    data.machineCode[LC.getValue()].setLabel(source[i].pattern[0].lexem);
                 }
 
                 else if(source[i].type == PatternType.PT_Pseudo_label)
@@ -696,7 +706,8 @@ namespace Assembler
                 // PSEUDO FATTE IN TEORIA, PASSIAMO ALLE ISTRUZIONI
                 // RRI/IOI
                 else if(line.type == PatternType.PT_RRIIOIonly || line.type == PatternType.PT_Label_comma_RRIIOI)
-                {   
+                {
+                    string label;
                     string lexem = line.pattern[k].lexem;
                     IOI istr = IOI.NOT_IOIISTR;
                     if(lexem == IOI.INP.ToString())
@@ -711,8 +722,10 @@ namespace Assembler
 
                     if(istr != IOI.NOT_IOIISTR)
                     {
+                        label = ram[LC.getValue()].getLabel();
                         ram[LC.getValue()].setValue(instructionAssembler.buildIOIop(istr).getValue());
                         ram[LC.getValue()].setInstruction(lexem);
+                        ram[LC.getValue()].setLabel(label);
                         LC.increment();
                         
                         continue;
@@ -726,8 +739,10 @@ namespace Assembler
                         return false;
                     }
 
+                    label = ram[LC.getValue()].getLabel();
                     ram[LC.getValue()].setValue(instructionAssembler.buildRRIop(instr).getValue());
                     ram[LC.getValue()].setInstruction(lexem);
+                    ram[LC.getValue()].setLabel(label);
                     LC.increment();
                     
                 }
@@ -774,8 +789,10 @@ namespace Assembler
                        line.type == PatternType.PT_Lable_comma_MRIValue_indirect)
                             addressType = addressing.indirect;
 
+                    string label = ram[LC.getValue()].getLabel();
                     ram[LC.getValue()] = instructionAssembler.buildMRIop(instructionAssembler.findMRI(lexem), addressValue, addressType);
                     ram[LC.getValue()].setInstruction(lexem);
+                    ram[LC.getValue()].setLabel(label);
                     LC.increment();
                 }
             }

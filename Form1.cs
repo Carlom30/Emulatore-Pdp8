@@ -116,7 +116,7 @@ namespace Emulatore_Pdp8
                 RAM.Text = "";
                 REGISTERS.Text = "";
                 string joinedRamBuffer = string.Join(Environment.NewLine, ramBuffer);
-                string joinedRegisterBuffer = string.Join(Environment.NewLine + Environment.NewLine, registerBuffer);
+                string joinedRegisterBuffer = string.Join(Environment.NewLine /*+ Environment.NewLine*/, registerBuffer);
                 //RAM.AppendText(joinedRamBuffer);
                 RAM.Text = joinedRamBuffer;
                 REGISTERS.Text = joinedRegisterBuffer;
@@ -216,6 +216,11 @@ namespace Emulatore_Pdp8
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             changeStepByStepComponentsStatus();
+        }
+
+        private void button3_Click_2(object sender, EventArgs e)
+        {
+            
         }
     }
 }

@@ -137,19 +137,20 @@ namespace Emulatore_Pdp8
         static void Main()
         {
             vm = new pdp8();
+            Printf.inizializeBuffers();
             //vm.addressToMAR();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
             Application.Run(new Form1());
 
-            vm.run(); //not so much to say
+            //vm.run(); //not so much to say
             
-            Console.WriteLine("End of programm, printing Registers...");
+            Printf.printLogOnBuffer("End of programm, printing Registers...");
             Printf.printRegisters(vm);
             //Printf.printRam(vm.ram);
             Printf.printSpecRam(0x0, 0x30F, vm.ram);
-            Console.WriteLine("Press any key to close the application");
+            Printf.printLogOnBuffer("Press any key to close the application");
             Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
                                //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
             //Printf.printRam(vm.ram);
@@ -196,6 +197,14 @@ namespace Emulatore_Pdp8
         {
             instruction = instr;
         }
+
+        public void setLabel(string lab)
+        {
+            label = lab;
+        }
+
+        public string getLabel()
+            => label;
     }
 
     struct u12 //registro unsigned poiché riferito a soli indirizzi (che quindi non saranno mai negativi)
@@ -338,47 +347,47 @@ namespace Emulatore_Pdp8
               dalla macchina (cosa ad oggi estremamente proibita XD)*/
             if (opr != 0b_111)
             {
-                Console.WriteLine("found MRI ops");
-                Console.Write("execute ");
+                Printf.printLogOnBuffer("found MRI ops");
+                Printf.printLogOnBuffer("execute ");
                 switch (opr)
                 {
                     case (byte)MRI.AND:
-                        Console.WriteLine(MRI.AND);
+                        Printf.printLogOnBuffer(MRI.AND.ToString());
                         AND();
                         break;
 
                     case (byte)MRI.ADD:
-                        Console.WriteLine(MRI.ADD);
+                        Printf.printLogOnBuffer(MRI.ADD.ToString());
                         ADD();
                         break;
 
                     case (byte)MRI.LDA:
-                        Console.WriteLine(MRI.LDA);
+                        Printf.printLogOnBuffer(MRI.LDA.ToString());
                         LDA();
                         break;
 
                     case (byte)MRI.STA:
-                        Console.WriteLine(MRI.STA);
+                        Printf.printLogOnBuffer(MRI.STA.ToString());
                         STA();
                         break;
 
                     case (byte)MRI.BUN:
-                        Console.WriteLine(MRI.BUN);
+                        Printf.printLogOnBuffer(MRI.BUN.ToString());
                         BUN();
                         break;
 
                     case (byte)MRI.BSA:
-                        Console.WriteLine(MRI.BSA);
+                        Printf.printLogOnBuffer(MRI.BSA.ToString());
                         BSA();
                         break;
 
                     case (byte)MRI.ISZ:
-                        Console.WriteLine(MRI.ISZ);
+                        Printf.printLogOnBuffer(MRI.ISZ.ToString());
                         ISZ();
                         break;
 
                     default:
-                        Console.WriteLine("is this a label?");
+                        Printf.printLogOnBuffer("is this a label?");
                         f = false;
                         r = false;
                         break;
@@ -387,72 +396,72 @@ namespace Emulatore_Pdp8
 
             if(opr == 0b_111 && !i)
             {
-                Console.WriteLine("found RRI ops");
-                Console.Write("execute ");
+                Printf.printLogOnBuffer("found RRI ops");
+                Printf.printLogOnBuffer("execute ");
                 switch (ram[mar.getValue()].getValue())
                 {
                     case (short)RRI.CLA:
-                        Console.WriteLine(RRI.CLA);
+                        Printf.printLogOnBuffer(RRI.CLA.ToString());
                         CLA();
                         break;
 
                     case (short)RRI.CLE:
-                        Console.WriteLine(RRI.CLE);
+                        Printf.printLogOnBuffer(RRI.CLE.ToString());
                         CLE();
                         break;
 
                     case (short)RRI.CMA:
-                        Console.WriteLine(RRI.CMA);
+                        Printf.printLogOnBuffer(RRI.CMA.ToString());
                         CMA();
                         break;
 
                     case (short)RRI.CME:
-                        Console.WriteLine(RRI.CME);
+                        Printf.printLogOnBuffer(RRI.CME.ToString());
                         CME();
                         break;
 
                     case (short)RRI.CIR:
-                        Console.WriteLine(RRI.CIR);
+                        Printf.printLogOnBuffer(RRI.CIR.ToString());
                         CIR();
                         break;
 
                     case (short)RRI.CIL:
-                        Console.WriteLine(RRI.CIL);
+                        Printf.printLogOnBuffer(RRI.CIL.ToString());
                         CIL();
                         break;
 
                     case (short)RRI.INC:
-                        Console.WriteLine(RRI.INC);
+                        Printf.printLogOnBuffer(RRI.INC.ToString());
                         INC();
                         break;
 
                     case (short)RRI.SPA:
-                        Console.WriteLine(RRI.SPA);
+                        Printf.printLogOnBuffer(RRI.SPA.ToString());
                         SPA();
                         break;
 
                     case (short)RRI.SNA:
-                        Console.WriteLine(RRI.SNA);
+                        Printf.printLogOnBuffer(RRI.SNA.ToString());
                         SNA();
                         break;
 
                     case (short)RRI.SZA:
-                        Console.WriteLine(RRI.SZA);
+                        Printf.printLogOnBuffer(RRI.SZA.ToString());
                         SZA();
                         break;
 
                     case (short)RRI.SZE:
-                        Console.WriteLine(RRI.SZE);
+                        Printf.printLogOnBuffer(RRI.SZE.ToString());
                         SZE();
                         break;
 
                     case (short)RRI.HLT:
-                        Console.WriteLine(RRI.HLT);
+                        Printf.printLogOnBuffer(RRI.HLT.ToString());
                         HLT();
                         break;
 
                     default:
-                        Console.WriteLine("is this a label?");
+                        Printf.printLogOnBuffer("is this a label?");
                         f = false;
                         r = false;
                         break;
@@ -462,22 +471,22 @@ namespace Emulatore_Pdp8
 
             if(opr == 0b_111 && i)
             {
-                Console.WriteLine("found I/O ops");
-                Console.Write("execute ");
+                Printf.printLogOnBuffer("found I/O ops");
+                Printf.printLogOnBuffer("execute ");
                 switch (ram[mar.getValue()].getValue())
                 {
                     case (unchecked((short)IOI.INP)):
-                        Console.WriteLine(IOI.INP);
+                        Printf.printLogOnBuffer(IOI.INP.ToString());
                         INP();
                         break;
 
                     case (unchecked((short)IOI.OUT)):
-                        Console.WriteLine(IOI.OUT);
+                        Printf.printLogOnBuffer(IOI.OUT.ToString());
                         OUT();
                         break;
 
                     default:
-                        Console.WriteLine("is this a label?");
+                        Printf.printLogOnBuffer("is this a label?");
                         f = false;
                         r = false;
                         break;
@@ -490,13 +499,13 @@ namespace Emulatore_Pdp8
 
         public void AND() // AND con AC
         {
-            Console.WriteLine("MAR <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD)");
             addressToMAR();
 
-            Console.WriteLine("MBR <- M");
+            Printf.printLogOnBuffer("MBR <- M");
             mbr.setValue(ram[mar.getValue()].getValue());
 
-            Console.WriteLine("AC <- AC & MBR");
+            Printf.printLogOnBuffer("AC <- AC & MBR");
             a.setValue((short)(a.getValue() & mbr.getValue()));
 
             f = false;
@@ -505,13 +514,13 @@ namespace Emulatore_Pdp8
 
         public void ADD() // ADD con AC
         {
-            Console.WriteLine("MAR <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD)");
             addressToMAR();
 
-            Console.WriteLine("MBR <- M");
+            Printf.printLogOnBuffer("MBR <- M");
             mbr.setValue(ram[mar.getValue()].getValue());
 
-            Console.WriteLine("EAC <- AC + MBR");
+            Printf.printLogOnBuffer("EAC <- AC + MBR");
             short c = (short)(a.getValue() + mbr.getValue());
             e = ((a.getValue() ^ mbr.getValue()) >= 0) & ((a.getValue() ^ c) < 0); //tested (works)
 
@@ -532,14 +541,14 @@ namespace Emulatore_Pdp8
 
         public void LDA() // carica in AC
         {
-            Console.WriteLine("MAR <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD)");
             addressToMAR();
 
-            Console.WriteLine("MBR <- M, AC <- 0");
+            Printf.printLogOnBuffer("MBR <- M, AC <- 0");
             mbr.setValue(ram[mar.getValue()].getValue());
             a.setValue(0);
 
-            Console.WriteLine("AC <- AC + MBR");
+            Printf.printLogOnBuffer("AC <- AC + MBR");
             a.setValue((short)(a.getValue() + mbr.getValue()));
 
             f = false;
@@ -548,13 +557,13 @@ namespace Emulatore_Pdp8
 
         public void STA() // memorizza AC
         {
-            Console.WriteLine("MAR <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD)");
             addressToMAR();
 
-            Console.WriteLine("MBR <- AC");
+            Printf.printLogOnBuffer("MBR <- AC");
             mbr.setValue(a.getValue());
 
-            Console.WriteLine("M <- MBR");
+            Printf.printLogOnBuffer("M <- MBR");
             ram[mar.getValue()].setValue(mbr.getValue());
 
             f = false;
@@ -563,7 +572,7 @@ namespace Emulatore_Pdp8
 
         public void BUN() // salto incondizionato
         {
-            Console.WriteLine("PC <- MBR(AD)");
+            Printf.printLogOnBuffer("PC <- MBR(AD)");
             pc.setValue(getAddressFromMBR().getValue());
 
             f = false;
@@ -572,7 +581,7 @@ namespace Emulatore_Pdp8
 
         public void BSA() // salto con memorizzazione dell'indirizzo di ritorno
         {
-            Console.WriteLine("MAR <- MBR(AD), MBR(AD) <- PC, PC <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD), MBR(AD) <- PC, PC <- MBR(AD)");
             addressToMAR();
 
             //update: Il professor Navarra mi ha informato che la bsa ha come effetto collaterale quello di trasferire oltre al pc anche l'opr
@@ -606,10 +615,10 @@ namespace Emulatore_Pdp8
             pc.setValue(getAddressFromMBR().getValue());
             mbr.setValue(tmp);
 
-            Console.WriteLine("M <- MBR");
+            Printf.printLogOnBuffer("M <- MBR");
             ram[mar.getValue()].setValue(mbr.getValue());
 
-            Console.WriteLine("PC <- PC + 1");
+            Printf.printLogOnBuffer("PC <- PC + 1");
             pc.increment();
 
 
@@ -619,22 +628,22 @@ namespace Emulatore_Pdp8
 
         public void ISZ() //Incrementa e salta se zero
         {
-            Console.WriteLine("MAR <- MBR(AD)");
+            Printf.printLogOnBuffer("MAR <- MBR(AD)");
             addressToMAR();
 
-            Console.WriteLine("MBR <- M");
+            Printf.printLogOnBuffer("MBR <- M");
             mbr.setValue(ram[mar.getValue()].getValue());
 
-            Console.WriteLine("MBR <- MBR + 1");
+            Printf.printLogOnBuffer("MBR <- MBR + 1");
             mbr.setValue((short)(mbr.getValue() + 1));
 
-            Console.WriteLine("M <- MBR");
+            Printf.printLogOnBuffer("M <- MBR");
             ram[mar.getValue()].setValue(mbr.getValue());
 
-            Console.WriteLine("if (MBR = 0) then (PC <- PC + 1)");
+            Printf.printLogOnBuffer("if (MBR = 0) then (PC <- PC + 1)");
             if (mbr.getValue() == 0)
             {
-                Console.WriteLine("MBR is 0, skipping next instruction");
+                Printf.printLogOnBuffer("MBR is 0, skipping next instruction");
                 pc.setValue((ushort)(pc.getValue() + 1)); //salta la prossima istruzione se 0
             }
 
@@ -646,7 +655,7 @@ namespace Emulatore_Pdp8
 
         public void CLA()
         {
-            Console.WriteLine("AC <- 0");
+            Printf.printLogOnBuffer("AC <- 0");
             a.setValue(0b_0000_0000_0000_0000);
 
             f = false;
@@ -655,7 +664,7 @@ namespace Emulatore_Pdp8
 
         public void CLE()
         {
-            Console.WriteLine("E <- 0");
+            Printf.printLogOnBuffer("E <- 0");
             e = false;
 
             f = false;
@@ -664,7 +673,7 @@ namespace Emulatore_Pdp8
 
         public void CMA() //complementa AC (complemento a 1)
         {
-            Console.WriteLine("AC <- AC'");
+            Printf.printLogOnBuffer("AC <- AC'");
             a.setValue((short)~a.getValue());
             f = false;
             return;
@@ -672,7 +681,7 @@ namespace Emulatore_Pdp8
 
         public void CME() //comeplementa E
         {
-            Console.WriteLine("E <- E'");
+            Printf.printLogOnBuffer("E <- E'");
             e = !e;
 
             f = false;
@@ -681,7 +690,7 @@ namespace Emulatore_Pdp8
 
         public void CIR() //circulate right E-AC
         {
-            Console.WriteLine("cir E-AC");
+            Printf.printLogOnBuffer("cir E-AC");
             bool tmp = Utility.isBitSet(a.getValue(), 0); //salvo il primo bit di ac su tmp
             short value = a.getValue(); //salvo ac in una variabile per comodità
             value = (short)(value >> 1); //shifto a destra value
@@ -696,7 +705,7 @@ namespace Emulatore_Pdp8
 
         public void CIL() //circulate left E-AC
         {
-            Console.WriteLine("cil E-AC");
+            Printf.printLogOnBuffer("cil E-AC");
             //la spiegazione è come quella di CIR, ma inversa
             bool tmp = Utility.isBitSet(a.getValue(), 15);
             short value = a.getValue();
@@ -713,7 +722,7 @@ namespace Emulatore_Pdp8
 
         public void INC()
         {
-            Console.WriteLine("E-AC <- AC + 1");
+            Printf.printLogOnBuffer("E-AC <- AC + 1");
             short c = (short)(a.getValue() + 1);
             //vedi ADD per spiegazione di e
             e = ((a.getValue() ^ (short)1) >= 0) & ((a.getValue() ^ c) < 0);
@@ -725,10 +734,10 @@ namespace Emulatore_Pdp8
 
         public void SPA() //skip on positive AC
         {
-            Console.WriteLine("IF AC(1) = 0 THEN PC <- PC + 1");
+            Printf.printLogOnBuffer("IF AC(1) = 0 THEN PC <- PC + 1");
             if (a.getValue() > 0)
             {
-                Console.WriteLine("Accumulator is positive, Skipping next instruction");
+                Printf.printLogOnBuffer("Accumulator is positive, Skipping next instruction");
                 pc.increment();
             }
 
@@ -738,10 +747,10 @@ namespace Emulatore_Pdp8
 
         public void SNA() //skip on negatie AC
         {
-            Console.WriteLine("IF AC(1) = 1 THEN PC <- PC + 1");
+            Printf.printLogOnBuffer("IF AC(1) = 1 THEN PC <- PC + 1");
             if (a.getValue() < 0)
             {
-                Console.WriteLine("Accumulator is negative, Skipping next instruction");
+                Printf.printLogOnBuffer("Accumulator is negative, Skipping next instruction");
                 pc.increment();
             }
 
@@ -751,10 +760,10 @@ namespace Emulatore_Pdp8
 
         public void SZA() //skip on AC = 0
         {
-            Console.WriteLine("IF AC = 0 THEN PC <- PC + 1");
+            Printf.printLogOnBuffer("IF AC = 0 THEN PC <- PC + 1");
             if (a.getValue() == 0)
             {
-                Console.WriteLine("Accumulator is zero, Skipping next instruction");
+                Printf.printLogOnBuffer("Accumulator is zero, Skipping next instruction");
                 pc.increment();
             }
 
@@ -764,10 +773,10 @@ namespace Emulatore_Pdp8
 
         public void SZE() //skip on E = 0
         {
-            Console.WriteLine("IF E = 0 THEN PC <- PC + 1");
+            Printf.printLogOnBuffer("IF E = 0 THEN PC <- PC + 1");
             if (e == false)
             {
-                Console.WriteLine("E register is zero, Skipping next instruction");
+                Printf.printLogOnBuffer("E register is zero, Skipping next instruction");
                 pc.increment();
             }
 
@@ -777,7 +786,7 @@ namespace Emulatore_Pdp8
 
         public void HLT()
         {
-            Console.WriteLine("S <- 0");
+            Printf.printLogOnBuffer("S <- 0");
             s = false;
         }
 
@@ -785,7 +794,7 @@ namespace Emulatore_Pdp8
         /*nb: queste due operazioni sono solo temporanee e dovranno essere modificate durante la realizzazione dell'interfaccia grafica*/
         public void INP()
         {
-            Console.WriteLine("AC <- ASCII(keyboard)");
+            Printf.printLogOnBuffer("AC <- ASCII(keyboard)");
             ConsoleKeyInfo inp = Console.ReadKey();
             a.setValue((short)inp.Key);
 
@@ -795,42 +804,42 @@ namespace Emulatore_Pdp8
 
         public void OUT()
         {
-            Console.WriteLine("Terminal <- AC");
-            Console.WriteLine("Output: " + Convert.ToChar(a.getValue()));
+            Printf.printLogOnBuffer("Terminal <- AC");
+            Printf.printLogOnBuffer("Output: " + Convert.ToChar(a.getValue()));
 
             f = false;
             return;
         }
 
-        public void run()
+        public void run(bool stepBystep, uint numberOfSteps)
         {
-            while (s) //fino a quando la macchina è accesa.
+            if(numberOfSteps == 0 && stepBystep == true)
             {
-                bool stepBystep = true; //mi servirà per la parte grafica
-                /*if(stepBystep)
-                {
-                    Console.WriteLine("press any key for the next instruction");
-                    Console.ReadKey();
-                }*/
-                //Console.WriteLine(pc.getValue());
+                Printf.printLogOnBuffer("stepBystep needs more then 0 steps!");
+            }
 
+            uint ount = 0; 
+            while (s) //fino a quando la macchina è accesa.
+            {   
                 if(!f && !r)
                 {
-                    Console.WriteLine("Fetch");
+                    Printf.printLogOnBuffer("Fetch");
                     fetch();
                 }
 
                 if (!f && r)
                 {
-                    Console.WriteLine("indirect Addressing");
+                    Printf.printLogOnBuffer("indirect Addressing");
                     indirectAddressing();
                 }
 
                 if (f && !r)
                 {
                     execute();
-                    Console.WriteLine("");
+                    Printf.printLogOnBuffer("");
                 }
+
+
             }
         }
     }

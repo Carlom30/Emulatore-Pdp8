@@ -54,7 +54,7 @@ namespace PrintSpace
             for (int i = compilationData.programAddress.getValue(); i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                ramBuffer[k] = ("Register:\t" + Convert.ToString(i, 16) + "\tDEC:\t" + ram[i].getValue() + "\tBIN:  " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "   INSTR:   " + ram[i].getInstruction());
+                ramBuffer[k] = (Convert.ToString(i, 16) + "\t" + ram[i].getValue() + "\t" + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "\t" + ram[i].getLabel() + "\t" + ram[i].getInstruction());
                 k++;
             } 
         }
@@ -78,10 +78,10 @@ namespace PrintSpace
 
             string[] registers =
             {
-                " MBR\tDEC " + vm.mbr.getValue() + "\tBIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg),
-                " A\tDEC " + vm.a.getValue() + "\tBIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg),
-                " MAR\tDEC " + vm.mar.getValue() + "\tBIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg),
-                " PC\tDEC " + vm.pc.getValue() + "\tBIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg),
+                " MBR\t" + vm.mbr.getValue() + "\t" + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg),
+                " A\t" + vm.a.getValue() + "\t" + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg),
+                " MAR\t" + vm.mar.getValue() + "\t" + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg),
+                " PC\t" + vm.pc.getValue() + "\t" + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg),
                 " S\t" + (vm.s ? 1 : 0),
                 " F\t" + (vm.f ? 1 : 0),
                 " R\t" + (vm.r ? 1 : 0),
