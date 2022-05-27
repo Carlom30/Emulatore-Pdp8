@@ -8,6 +8,7 @@ using UtilityStuff;
 using Assembler;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 
 namespace Emulatore_Pdp8
@@ -85,6 +86,7 @@ namespace Emulatore_Pdp8
         //singleton vm
         private static pdp8 vm;
         static int nSteps = -1; //se -1 allora non ci sono step da compiere
+        public static Form1 form;
 
         public static int getnSteps()
         {
@@ -100,6 +102,11 @@ namespace Emulatore_Pdp8
         public static pdp8 getVm()
         {
             return vm;
+        }
+
+        public static void inizializeVM()
+        {
+            vm = new pdp8();
         }
 
         public static void setVMParameters(i16[] ram, u12 pc)
@@ -141,8 +148,9 @@ namespace Emulatore_Pdp8
             //vm.addressToMAR();
 
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false); //things di form che per ora non mi servono
-            Application.Run(new Form1());
+            Application.SetCompatibleTextRenderingDefault(false);
+            form = new Form1();
+            Application.Run(form);
 
             //vm.run(); //not so much to say
             
@@ -260,6 +268,8 @@ namespace Emulatore_Pdp8
         public bool f;
         public bool r;
 
+        public bool isRunning; 
+
         public pdp8() //ovviamente non prende parametri XD
         {
             this.ram = new i16[4096];
@@ -276,7 +286,8 @@ namespace Emulatore_Pdp8
             this.s = true;
             this.f = false;
             this.r = false;
-            
+
+            this.isRunning = false;
             return;
         }
 
@@ -811,16 +822,19 @@ namespace Emulatore_Pdp8
             return;
         }
 
-        public void run(bool stepBystep, uint numberOfSteps)
+        public void run()
         {
-            if(numberOfSteps == 0 && stepBystep == true)
-            {
-                Printf.printLogOnBuffer("stepBystep needs more then 0 steps!");
-            }
+            //ok probabilmente run funziona solamente quando l'utente vuole eseguire il programma NON step by step
+            //per quello farò un'altra funzione
+
+            if (s == false)
+                s = true;
 
             uint ount = 0; 
             while (s) //fino a quando la macchina è accesa.
-            {   
+            {
+                Program.getVm().isRunning = true;
+
                 if(!f && !r)
                 {
                     Printf.printLogOnBuffer("Fetch");
@@ -839,7 +853,16 @@ namespace Emulatore_Pdp8
                     Printf.printLogOnBuffer("");
                 }
 
-
+                //print run info into buffer
+                
+                Printf.printRamOnBuffer(Program.getVm().ram, Compiler.getCompilerData().programAddress);
+                Printf.printRegisters(Program.getVm());
+                //TerminalBuffer.dataAreBusy = false;
+                Program.form.safePrintStuff();
+                //Thread.Sleep(1000);
+                //Program.getVm().isRunning = false;
+                //Printf.printLog(LOG);
+                //Program.inizializeVM();
             }
         }
     }

@@ -12,6 +12,7 @@ using Emulatore_Pdp8;
 using PrintSpace;
 using Assembler;
 using UtilityStuff;
+using System.Threading;
 
 namespace Emulatore_Pdp8
 {
@@ -24,9 +25,29 @@ namespace Emulatore_Pdp8
          */
         OpenFileDialog sourceFile = null;
         int nStepsValue = 0;
+        string[] ramBuffer;
+        string[] registerBuffer;
+        string[] logBuffer;
+
+        
+        public void updateRAM()
+        {
+            ramBuffer = Printf.getRamBuffer();
+            RAM.Text = string.Join(Environment.NewLine, ramBuffer);
+            return;
+        }
+
+        public void updateLOG()
+        {
+            logBuffer = Printf.getLogBuffer();
+            LOG.Text = string.Join(Environment.NewLine, logBuffer);
+            return;
+        }
+
 
         public int getNsteps() => nStepsValue;
         public bool stepByStepIsEnabeld() => checkBox_StepByStep.Enabled;
+
         private void update()
         {
             Printf.inizializeBuffers();
@@ -66,21 +87,6 @@ namespace Emulatore_Pdp8
             //textBox1.Text = string.Join("\n", strings);
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            //RAM
-            
-        }
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-            //LOG
-            
-        }
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-            //REGISTERS
-            
-        }
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -111,8 +117,8 @@ namespace Emulatore_Pdp8
 
             else
             {
-                string[] ramBuffer = Printf.getRamBuffer();
-                string[] registerBuffer = Printf.getRegisterBuffer();
+                ramBuffer = Printf.getRamBuffer();
+                registerBuffer = Printf.getRegisterBuffer();
                 RAM.Text = "";
                 REGISTERS.Text = "";
                 string joinedRamBuffer = string.Join(Environment.NewLine, ramBuffer);
@@ -133,14 +139,6 @@ namespace Emulatore_Pdp8
         {
             //exit
             Close();
-        }
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void label3_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -194,6 +192,68 @@ namespace Emulatore_Pdp8
                 nStepsValue--;
             nSteps.Text = nStepsValue.ToString();
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            changeStepByStepComponentsStatus();
+        }
+
+        delegate void printStuffCallBack();
+
+        public void safePrintStuff() // https://stackoverflow.com/questions/10775367/cross-thread-operation-not-valid-control-textbox1-accessed-from-a-thread-othe
+        {
+            if (this.RAM.InvokeRequired)
+            {
+                printStuffCallBack ps = new printStuffCallBack(printStuff);
+                this.Invoke(ps);
+            }
+
+            else
+                printStuff();
+        }
+
+        private void printStuff()
+        {
+
+            RAM.Clear();
+            RAM.Text = string.Join(Environment.NewLine, Printf.getRamBuffer());
+            LOG.Clear();
+            LOG.Text = string.Join(Environment.NewLine, Printf.getLogBuffer());
+            REGISTERS.Clear();
+            REGISTERS.Text = string.Join(Environment.NewLine, Printf.getRegisterBuffer());
+           
+        }
+        private void button3_Click_2(object sender, EventArgs e)
+        {
+            //run vm
+            //Program.getVm().run();
+            Thread run = new Thread(Program.getVm().run);
+            run.Start();
+            //if(updateThings.IsAlive)
+        }
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            //RAM
+            
+        }
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            //LOG
+            
+        }
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            //REGISTERS
+            
+        }
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
         private void nSteps_TextChanged(object sender, EventArgs e)
         {
             
@@ -211,16 +271,6 @@ namespace Emulatore_Pdp8
         private void label2_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            changeStepByStepComponentsStatus();
-        }
-
-        private void button3_Click_2(object sender, EventArgs e)
-        {
-            
         }
     }
 }

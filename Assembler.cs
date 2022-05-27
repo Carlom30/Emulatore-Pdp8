@@ -470,6 +470,7 @@ namespace Assembler
             {
                 return;
             }
+
             labelTabel = new Dictionary<string, u12>();
             labelKeys = new List<string>();
             CompilerData data = new CompilerData();
@@ -487,7 +488,7 @@ namespace Assembler
             {
                 compilerData = data;
                 Program.setVMParameters(compilerData.machineCode, compilerData.programAddress);
-                Printf.printRamOnBuffer(compilerData);
+                Printf.printRamOnBuffer(compilerData.machineCode, compilerData.programAddress);
                 Printf.printRegisters(Program.getVm());
             }
         }

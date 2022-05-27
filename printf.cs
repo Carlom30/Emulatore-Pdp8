@@ -6,9 +6,47 @@ using System.Threading.Tasks;
 using Emulatore_Pdp8;
 using UtilityStuff;
 using Assembler;
+using System.Windows.Forms;
 
 namespace PrintSpace
 {
+    public sealed class TerminalBuffer : System.Threading.WaitHandle //tenatvo di implementazione mutex
+    {
+        public enum BufferType
+        {
+            ram = 1,
+            log = 2,
+            registers = 3
+        };
+
+        static string[] ramBuffer;
+        static List<string> logBuffer;
+        static string[] registersBuffer;
+
+        static public bool dataAreBusy;
+        static string[] getLogBuffer()
+            => logBuffer.ToArray();
+
+        static string[] getRamBuffer()
+            => ramBuffer;
+
+        static string[] getRegisterBuffer()
+            => registersBuffer;
+
+        public static string[] getAccessToData(BufferType type)
+        {
+                        
+            if (type == BufferType.ram)
+                return getRamBuffer();
+
+            else if (type == BufferType.log)
+                return getLogBuffer();
+
+            else
+                return getRegisterBuffer();
+
+        }
+    }
     class Printf
     {
         static string[] ramBuffer;
@@ -23,14 +61,10 @@ namespace PrintSpace
         }
 
         public static string[] getLogBuffer()
-        {
-            return logBuffer.ToArray();
-        }
+            => logBuffer.ToArray();
 
         public static string[] getRamBuffer()
-        {
-            return ramBuffer;
-        }
+            => ramBuffer;
 
         public static string[] getRegisterBuffer() 
             => registersBuffer;
@@ -39,38 +73,28 @@ namespace PrintSpace
         {
             logBuffer.Add(log);
         }
-
         public static void printRegisterOnBuffer(string[] registers)
         {
             registersBuffer = registers;
         }
-
-
-        static public void printRamOnBuffer(CompilerData compilationData)
+        static public void printRamOnBuffer(i16[] ram, u12 programAddres)
         {
-            i16[] ram = compilationData.machineCode;
             string[] ramToString = new string[ram.Length];
             int k = 0;
-            for (int i = compilationData.programAddress.getValue(); i < ram.Length; i++)
+            for (int i = programAddres.getValue(); i < ram.Length; i++)
             {
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
                 ramBuffer[k] = (Convert.ToString(i, 16) + "\t" + ram[i].getValue() + "\t" + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "\t" + ram[i].getLabel() + "\t" + ram[i].getInstruction());
                 k++;
             } 
         }
-
-        static public void printRam(i16[] ram)
+        public static void printLog(TextBox LOG)
         {
-            for(int i = 0; i < ram.Length; i++)
+            string[] logBuffer = Printf.getLogBuffer();
+            for (int i = 0; i < logBuffer.Length; i++)
             {
-                string toBin = Convert.ToString(ram[i].getValue(), 2);
-                Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg));
-                Console.Write("\n");
-                
-                //Console.WriteLine(toBin);
+                LOG.AppendText(logBuffer[i] + Environment.NewLine);
             }
-
-            return;
         }
 
         static public void printRegisters(pdp8 vm)
@@ -91,15 +115,6 @@ namespace PrintSpace
             };
 
             printRegisterOnBuffer(registers);
-            /*Console.WriteLine("");
-            Console.WriteLine("MBR: DEC " + vm.mbr.getValue() + " BIN " + Utility.valueToBin(vm.mbr.getValue(), RegType.bit16_reg));
-            Console.WriteLine("A: DEC " + vm.a.getValue() + " BIN " + Utility.valueToBin(vm.a.getValue(), RegType.bit16_reg));
-            Console.WriteLine("MAR: DEC " + vm.mar.getValue() + " BIN " + Utility.valueToBin(vm.mar.getValue(), RegType.bit12_reg));
-            Console.WriteLine("PC: DEC " + vm.pc.getValue() + " BIN " + Utility.valueToBin(vm.pc.getValue(), RegType.bit12_reg));
-            Console.WriteLine("S: " + (vm.s ? 1 : 0) + " F: " + (vm.f ? 1 : 0) + " R: " + (vm.r ? 1 : 0) + " I: " + (vm.i ? 1 : 0) + " E: " + (vm.e ? 1 : 0));
-            Console.WriteLine("OPR: " + Utility.valueToBin(vm.opr, RegType.bit3_reg));
-            Console.WriteLine("");*/
-
         }
 
         //necessito di una funzione che faccia print dall'i-esimo elemento della ram, al j-esimo

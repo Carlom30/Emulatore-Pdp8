@@ -52,7 +52,7 @@ namespace Emulatore_Pdp8
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
+            this.RUN_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // RAM
@@ -305,16 +305,16 @@ namespace Emulatore_Pdp8
             this.label11.TabIndex = 21;
             this.label11.Text = "Register";
             // 
-            // button3
+            // RUN_button
             // 
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(617, 614);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 34);
-            this.button3.TabIndex = 24;
-            this.button3.Text = "Run";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_2);
+            this.RUN_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RUN_button.Location = new System.Drawing.Point(617, 614);
+            this.RUN_button.Name = "RUN_button";
+            this.RUN_button.Size = new System.Drawing.Size(75, 34);
+            this.RUN_button.TabIndex = 24;
+            this.RUN_button.Text = "Run";
+            this.RUN_button.UseVisualStyleBackColor = true;
+            this.RUN_button.Click += new System.EventHandler(this.button3_Click_2);
             // 
             // Form1
             // 
@@ -322,7 +322,7 @@ namespace Emulatore_Pdp8
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(1071, 820);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.RUN_button);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label11);
@@ -379,7 +379,7 @@ namespace Emulatore_Pdp8
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button RUN_button;
     }
 }
 
