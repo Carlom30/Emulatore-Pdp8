@@ -218,10 +218,10 @@ namespace Emulatore_Pdp8
             RAM.Clear();
             RAM.Text = string.Join(Environment.NewLine, Printf.getRamBuffer());
             LOG.Clear();
-            LOG.Text = string.Join(Environment.NewLine, Printf.getLogBuffer());
+            LOG.AppendText(string.Join(Environment.NewLine, Printf.getLogBuffer()));
             REGISTERS.Clear();
             REGISTERS.Text = string.Join(Environment.NewLine, Printf.getRegisterBuffer());
-           
+            Thread.Sleep(500);
         }
         private void button3_Click_2(object sender, EventArgs e)
         {

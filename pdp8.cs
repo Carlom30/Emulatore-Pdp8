@@ -837,20 +837,26 @@ namespace Emulatore_Pdp8
 
                 if(!f && !r)
                 {
-                    Printf.printLogOnBuffer("Fetch");
+                    Printf.printLogOnBuffer("Fetch"); 
                     fetch();
+                    Printf.printRegisters(Program.getVm());
+                    Program.form.safePrintStuff();
                 }
 
                 if (!f && r)
                 {
                     Printf.printLogOnBuffer("indirect Addressing");
                     indirectAddressing();
+                    Printf.printRegisters(Program.getVm());
+                    Program.form.safePrintStuff();
                 }
 
                 if (f && !r)
                 {
                     execute();
                     Printf.printLogOnBuffer("");
+                    Printf.printRegisters(Program.getVm());
+                    Program.form.safePrintStuff();
                 }
 
                 //print run info into buffer

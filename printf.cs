@@ -120,6 +120,12 @@ namespace PrintSpace
         //necessito di una funzione che faccia print dall'i-esimo elemento della ram, al j-esimo
         static public void printSpecRam(int start, int end, i16[] ram)
         {
+            if(start < 0 || start > 4096 || end < 0 || end > 4096)
+            {
+                printLogOnBuffer("range of memory out of bounds");
+                return;
+            }
+
             for(int i = start; i <= end; i++)
             {
                 Console.Write("register: " + Convert.ToString(i, 16) + " DEC: " + ram[i].getValue() + " BIN: " + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg));
