@@ -171,19 +171,32 @@ namespace Emulatore_Pdp8
         }
     }
 
-    struct i16 //tutta la roba sotto non dovrebbe servire, ma la faccio in caso... beh, servisse :D
+    struct i16 
     {
         private short value;
         private string instruction;
         private string label;
+
+        private bool breakPoint;
 
         public i16(short firstValue)
         {
             value = 0;
             instruction = "";
             label = "";
+            breakPoint = false;
             setValue(firstValue);
             
+        }
+
+        public bool hasBreakPoint()
+        {
+            return breakPoint;
+        }
+
+        public void setBreakPoint(bool bpValue)
+        {
+            breakPoint = bpValue;
         }
     
         public short getValue()
@@ -246,6 +259,18 @@ namespace Emulatore_Pdp8
             _value++;
         }
 
+    }
+
+    class Pointer
+    {
+        char printedPointer;
+        i16 pointedMemory;
+
+        public Pointer()
+        {
+            printedPointer = '>';
+            pointedMemory = Program.getVm().ram[0]; //il pointer punta sempre al primo i16, poi cambia con la compilazione
+        }
     }
 
     class pdp8
