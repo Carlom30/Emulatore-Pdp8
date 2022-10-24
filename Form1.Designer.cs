@@ -53,6 +53,9 @@ namespace Emulatore_Pdp8
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.RUN_button = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // RAM
@@ -60,7 +63,7 @@ namespace Emulatore_Pdp8
             this.RAM.BackColor = System.Drawing.SystemColors.WindowText;
             this.RAM.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RAM.ForeColor = System.Drawing.SystemColors.Window;
-            this.RAM.Location = new System.Drawing.Point(12, 86);
+            this.RAM.Location = new System.Drawing.Point(69, 85);
             this.RAM.Multiline = true;
             this.RAM.Name = "RAM";
             this.RAM.Size = new System.Drawing.Size(583, 377);
@@ -71,7 +74,7 @@ namespace Emulatore_Pdp8
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(8, 28);
+            this.label1.Location = new System.Drawing.Point(65, 27);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 20);
             this.label1.TabIndex = 1;
@@ -81,7 +84,7 @@ namespace Emulatore_Pdp8
             // CompilerButton
             // 
             this.CompilerButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CompilerButton.Location = new System.Drawing.Point(617, 574);
+            this.CompilerButton.Location = new System.Drawing.Point(674, 573);
             this.CompilerButton.Name = "CompilerButton";
             this.CompilerButton.Size = new System.Drawing.Size(75, 34);
             this.CompilerButton.TabIndex = 2;
@@ -93,7 +96,7 @@ namespace Emulatore_Pdp8
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(8, 489);
+            this.label2.Location = new System.Drawing.Point(65, 488);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 20);
             this.label2.TabIndex = 3;
@@ -105,7 +108,7 @@ namespace Emulatore_Pdp8
             this.LOG.BackColor = System.Drawing.SystemColors.WindowText;
             this.LOG.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LOG.ForeColor = System.Drawing.SystemColors.Window;
-            this.LOG.Location = new System.Drawing.Point(12, 512);
+            this.LOG.Location = new System.Drawing.Point(69, 511);
             this.LOG.Multiline = true;
             this.LOG.Name = "LOG";
             this.LOG.Size = new System.Drawing.Size(583, 228);
@@ -117,7 +120,7 @@ namespace Emulatore_Pdp8
             this.REGISTERS.BackColor = System.Drawing.SystemColors.WindowText;
             this.REGISTERS.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.REGISTERS.ForeColor = System.Drawing.SystemColors.Window;
-            this.REGISTERS.Location = new System.Drawing.Point(617, 86);
+            this.REGISTERS.Location = new System.Drawing.Point(662, 85);
             this.REGISTERS.Multiline = true;
             this.REGISTERS.Name = "REGISTERS";
             this.REGISTERS.Size = new System.Drawing.Size(394, 377);
@@ -128,7 +131,7 @@ namespace Emulatore_Pdp8
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(613, 28);
+            this.label3.Location = new System.Drawing.Point(658, 27);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(104, 20);
             this.label3.TabIndex = 6;
@@ -138,7 +141,7 @@ namespace Emulatore_Pdp8
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(617, 706);
+            this.button1.Location = new System.Drawing.Point(674, 705);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 34);
             this.button1.TabIndex = 7;
@@ -149,7 +152,7 @@ namespace Emulatore_Pdp8
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(617, 512);
+            this.button2.Location = new System.Drawing.Point(674, 511);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 56);
             this.button2.TabIndex = 8;
@@ -160,7 +163,7 @@ namespace Emulatore_Pdp8
             // CleanLog
             // 
             this.CleanLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CleanLog.Location = new System.Drawing.Point(12, 746);
+            this.CleanLog.Location = new System.Drawing.Point(69, 745);
             this.CleanLog.Name = "CleanLog";
             this.CleanLog.Size = new System.Drawing.Size(94, 29);
             this.CleanLog.TabIndex = 9;
@@ -171,7 +174,7 @@ namespace Emulatore_Pdp8
             // plus
             // 
             this.plus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.plus.Location = new System.Drawing.Point(824, 575);
+            this.plus.Location = new System.Drawing.Point(881, 574);
             this.plus.Name = "plus";
             this.plus.Size = new System.Drawing.Size(34, 34);
             this.plus.TabIndex = 11;
@@ -182,7 +185,7 @@ namespace Emulatore_Pdp8
             // mines
             // 
             this.mines.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mines.Location = new System.Drawing.Point(733, 575);
+            this.mines.Location = new System.Drawing.Point(790, 574);
             this.mines.Name = "mines";
             this.mines.Size = new System.Drawing.Size(34, 34);
             this.mines.TabIndex = 12;
@@ -195,7 +198,7 @@ namespace Emulatore_Pdp8
             this.nSteps.BackColor = System.Drawing.SystemColors.WindowText;
             this.nSteps.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nSteps.ForeColor = System.Drawing.SystemColors.Window;
-            this.nSteps.Location = new System.Drawing.Point(773, 575);
+            this.nSteps.Location = new System.Drawing.Point(830, 574);
             this.nSteps.Multiline = true;
             this.nSteps.Name = "nSteps";
             this.nSteps.Size = new System.Drawing.Size(45, 34);
@@ -207,7 +210,7 @@ namespace Emulatore_Pdp8
             // 
             this.Slabel_nSteps.AutoSize = true;
             this.Slabel_nSteps.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Slabel_nSteps.Location = new System.Drawing.Point(769, 552);
+            this.Slabel_nSteps.Location = new System.Drawing.Point(826, 551);
             this.Slabel_nSteps.Name = "Slabel_nSteps";
             this.Slabel_nSteps.Size = new System.Drawing.Size(60, 20);
             this.Slabel_nSteps.TabIndex = 14;
@@ -217,7 +220,7 @@ namespace Emulatore_Pdp8
             // 
             this.checkBox_StepByStep.AutoSize = true;
             this.checkBox_StepByStep.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_StepByStep.Location = new System.Drawing.Point(733, 513);
+            this.checkBox_StepByStep.Location = new System.Drawing.Point(790, 512);
             this.checkBox_StepByStep.Name = "checkBox_StepByStep";
             this.checkBox_StepByStep.Size = new System.Drawing.Size(122, 24);
             this.checkBox_StepByStep.TabIndex = 15;
@@ -229,7 +232,7 @@ namespace Emulatore_Pdp8
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(8, 63);
+            this.label4.Location = new System.Drawing.Point(65, 62);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(69, 20);
             this.label4.TabIndex = 16;
@@ -239,7 +242,7 @@ namespace Emulatore_Pdp8
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(83, 63);
+            this.label5.Location = new System.Drawing.Point(140, 62);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(66, 20);
             this.label5.TabIndex = 17;
@@ -249,7 +252,7 @@ namespace Emulatore_Pdp8
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(155, 63);
+            this.label6.Location = new System.Drawing.Point(212, 62);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(53, 20);
             this.label6.TabIndex = 18;
@@ -259,7 +262,7 @@ namespace Emulatore_Pdp8
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(298, 63);
+            this.label7.Location = new System.Drawing.Point(355, 62);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(48, 20);
             this.label7.TabIndex = 19;
@@ -269,7 +272,7 @@ namespace Emulatore_Pdp8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(371, 63);
+            this.label8.Location = new System.Drawing.Point(428, 62);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(84, 20);
             this.label8.TabIndex = 20;
@@ -279,7 +282,7 @@ namespace Emulatore_Pdp8
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(760, 63);
+            this.label9.Location = new System.Drawing.Point(805, 62);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(53, 20);
             this.label9.TabIndex = 23;
@@ -289,7 +292,7 @@ namespace Emulatore_Pdp8
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(688, 63);
+            this.label10.Location = new System.Drawing.Point(733, 62);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(66, 20);
             this.label10.TabIndex = 22;
@@ -299,7 +302,7 @@ namespace Emulatore_Pdp8
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(613, 63);
+            this.label11.Location = new System.Drawing.Point(658, 62);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(69, 20);
             this.label11.TabIndex = 21;
@@ -308,7 +311,7 @@ namespace Emulatore_Pdp8
             // RUN_button
             // 
             this.RUN_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RUN_button.Location = new System.Drawing.Point(617, 614);
+            this.RUN_button.Location = new System.Drawing.Point(674, 613);
             this.RUN_button.Name = "RUN_button";
             this.RUN_button.Size = new System.Drawing.Size(75, 34);
             this.RUN_button.TabIndex = 24;
@@ -316,12 +319,47 @@ namespace Emulatore_Pdp8
             this.RUN_button.UseVisualStyleBackColor = true;
             this.RUN_button.Click += new System.EventHandler(this.button3_Click_2);
             // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(10, 244);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(53, 41);
+            this.button3.TabIndex = 25;
+            this.button3.Text = "BP";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.Location = new System.Drawing.Point(19, 204);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(34, 34);
+            this.button4.TabIndex = 26;
+            this.button4.Text = "/\\";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button5.Location = new System.Drawing.Point(19, 291);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(34, 34);
+            this.button5.TabIndex = 27;
+            this.button5.Text = "\\/";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.ClientSize = new System.Drawing.Size(1071, 820);
+            this.ClientSize = new System.Drawing.Size(1107, 820);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.RUN_button);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label10);
@@ -347,7 +385,7 @@ namespace Emulatore_Pdp8
             this.Controls.Add(this.label1);
             this.Controls.Add(this.RAM);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Pdp8 Emulator";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -380,6 +418,9 @@ namespace Emulatore_Pdp8
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button RUN_button;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }
 

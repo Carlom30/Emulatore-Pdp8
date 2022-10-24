@@ -113,6 +113,7 @@ namespace Emulatore_Pdp8
         {
             vm.ram = ram;
             vm.pc.setValue(pc.getValue());
+            vm.pointer.pointedAddress = pc;
         }
         /// <summary>
         /// The main entry point for the application.
@@ -144,6 +145,7 @@ namespace Emulatore_Pdp8
         static void Main()
         {
             vm = new pdp8();
+            
             Printf.inizializeBuffers();
             //vm.addressToMAR();
 
@@ -177,28 +179,16 @@ namespace Emulatore_Pdp8
         private string instruction;
         private string label;
 
-        private bool breakPoint;
-
         public i16(short firstValue)
         {
             value = 0;
             instruction = "";
             label = "";
-            breakPoint = false;
             setValue(firstValue);
             
         }
 
-        public bool hasBreakPoint()
-        {
-            return breakPoint;
-        }
-
-        public void setBreakPoint(bool bpValue)
-        {
-            breakPoint = bpValue;
-        }
-    
+ 
         public short getValue()
         {
             return value;
@@ -264,17 +254,40 @@ namespace Emulatore_Pdp8
     class Pointer
     {
         char printedPointer;
-        i16 pointedMemory;
+        //i16 pointedMemory;
+        public u12 pointedAddress;
+        int pointedInt;
+        pdp8 vm;
 
-        public Pointer()
+        public Pointer(pdp8 newvm)
         {
             printedPointer = '>';
-            pointedMemory = Program.getVm().ram[0]; //il pointer punta sempre al primo i16, poi cambia con la compilazione
+            //pointedMemory = Program.getVm().ram[0x100]; //il pointer punta sempre al primo i16, poi cambia con la compilazione
+            pointedAddress = new u12(0x0);
+            this.vm = newvm;
+        }
+
+        public bool checkIfMemoryPointed(u12 address)
+        {
+            if(pointedAddress.getValue() == address.getValue())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void changePointedMemory(bool isPositive)
+        {
+            int one = isPositive ? 1 : -1;
+            pointedAddress.setValue((ushort)(pointedAddress.getValue() + one));
         }
     }
 
     class pdp8
     {
+        public Pointer pointer;
+        public List<u12> breakPoints; //breaking bad
         //definizione contenuto della macchina e funzioni istruzioni
         public i16[] ram; //insieme di tutti i registri (eccetto quelli sotto)
         public i16 mbr; // memory buffer register
@@ -282,6 +295,7 @@ namespace Emulatore_Pdp8
 
         public u12 mar; //memory address register
         public u12 pc; //program counter
+
 
         public byte opr; //3 bit per il codice operazione
 
@@ -297,6 +311,8 @@ namespace Emulatore_Pdp8
 
         public pdp8() //ovviamente non prende parametri XD
         {
+            this.breakPoints = new List<u12>();
+            //breakPoints.Add(new u12(0x0));
             this.ram = new i16[4096];
             this.mbr = new i16();
             this.a = new i16();
@@ -313,6 +329,8 @@ namespace Emulatore_Pdp8
             this.r = false;
 
             this.isRunning = false;
+            this.pointer = new Pointer(this);
+
             return;
         }
 
@@ -859,6 +877,11 @@ namespace Emulatore_Pdp8
             while (s) //fino a quando la macchina è accesa.
             {
                 Program.getVm().isRunning = true;
+
+                /*if(this.breakPoints.Contains(pc))
+                {
+                    break;
+                }*/
 
                 if(!f && !r)
                 {

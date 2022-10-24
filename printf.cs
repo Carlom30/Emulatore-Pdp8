@@ -12,7 +12,6 @@ namespace PrintSpace
 {
     //singleton per "puntare" al banco di memoria dove si intenderebbe posizionare un break point
     
-
     public sealed class TerminalBuffer : System.Threading.WaitHandle //tenatvo di implementazione mutex
     {
         public enum BufferType
@@ -82,13 +81,19 @@ namespace PrintSpace
         }
         static public void printRamOnBuffer(i16[] ram, u12 programAddres)
         {
+            string pointer = "";
             string[] ramToString = new string[ram.Length];
             int k = 0;
             for (int i = programAddres.getValue(); i < ram.Length; i++)
             {
+                if(Program.getVm().pointer.checkIfMemoryPointed(new u12((ushort)i)))
+                {
+                    pointer = "> ";
+                }
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
-                ramBuffer[k] = ("> " + Convert.ToString(i, 16) + "\t" + ram[i].getValue() + "\t" + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "\t" + ram[i].getLabel() + "\t" + ram[i].getInstruction());
+                ramBuffer[k] = (pointer + Convert.ToString(i, 16) + "\t" + ram[i].getValue() + "\t" + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "\t" + ram[i].getLabel() + "\t" + ram[i].getInstruction());
                 k++;
+                pointer = "";
             } 
         }
         public static void printLog(TextBox LOG)

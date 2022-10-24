@@ -15,7 +15,6 @@ namespace Assembler
 {
     class CompilerData
     {
-        
         public i16[] machineCode;
         public u12 programAddress;
         public LineCode[] tkSource;
@@ -29,6 +28,7 @@ namespace Assembler
             completed = false;
         }
     }
+
     struct Token
     {
         public TokenType type;

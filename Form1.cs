@@ -127,7 +127,6 @@ namespace Emulatore_Pdp8
                 RAM.Text = joinedRamBuffer;
                 REGISTERS.Text = joinedRegisterBuffer;
                 //RAM.Select(0, 0);
-
                 //RAM.AutoScrollOffset = new Point(0, 0);
                 /*for(int i = 0; i < 0x1a; i++)
                 {
@@ -214,7 +213,6 @@ namespace Emulatore_Pdp8
 
         private void printStuff()
         {
-
             RAM.Clear();
             RAM.Text = string.Join(Environment.NewLine, Printf.getRamBuffer());
             LOG.Clear();
@@ -269,6 +267,16 @@ namespace Emulatore_Pdp8
 
         }
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
         {
 
         }
