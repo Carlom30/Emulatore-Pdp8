@@ -24,7 +24,7 @@ namespace Emulatore_Pdp8
                      
          */
         OpenFileDialog sourceFile = null;
-        int nStepsValue = 0;
+        public int nStepsValue = 0;
         string[] ramBuffer;
         string[] registerBuffer;
         string[] logBuffer;
@@ -32,8 +32,14 @@ namespace Emulatore_Pdp8
         
         public void updateRAM()
         {
+            //Point p = RAM.AutoScrollOffset;
+            int selStart = RAM.SelectionStart;
+            int selLen = RAM.SelectionLength;
             ramBuffer = Printf.getRamBuffer();
             RAM.Text = string.Join(Environment.NewLine, ramBuffer);
+            //RAM.AutoScrollOffset = p;
+            RAM.Select(selStart, selLen);
+            RAM.ScrollToCaret();
             return;
         }
 
@@ -273,12 +279,24 @@ namespace Emulatore_Pdp8
 
         private void button4_Click(object sender, EventArgs e)
         {
-
+            Program.getVm().pointer.changePointedMemory(false);
+            Printf.printRamOnBuffer(Program.getVm().ram, Compiler.getCompilerData().programAddress);
+            updateRAM();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
+            Program.getVm().pointer.changePointedMemory(true);
+            Printf.printRamOnBuffer(Program.getVm().ram, Compiler.getCompilerData().programAddress);
+            updateRAM();
+        
+        }
 
+        private void button3_Click_3(object sender, EventArgs e)
+        {
+            Program.getVm().pointer.registerBreakPoint();
+            Printf.printRamOnBuffer(Program.getVm().ram, Compiler.getCompilerData().programAddress);
+            updateRAM();
         }
     }
 }

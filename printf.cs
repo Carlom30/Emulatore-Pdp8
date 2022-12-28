@@ -90,6 +90,12 @@ namespace PrintSpace
                 {
                     pointer = "> ";
                 }
+
+                else if(Program.getVm().breakPoints.Contains(new u12((ushort)i)))
+                {
+                    pointer = "* ";
+                }
+
                 string toBin = Convert.ToString(ram[i].getValue(), 2);
                 ramBuffer[k] = (pointer + Convert.ToString(i, 16) + "\t" + ram[i].getValue() + "\t" + Utility.valueToBin(ram[i].getValue(), RegType.bit16_reg) + "\t" + ram[i].getLabel() + "\t" + ram[i].getInstruction());
                 k++;

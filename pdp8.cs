@@ -155,15 +155,7 @@ namespace Emulatore_Pdp8
             Application.Run(form);
 
             //vm.run(); //not so much to say
-            
-            Printf.printLogOnBuffer("End of programm, printing Registers...");
-            Printf.printRegisters(vm);
-            //Printf.printRam(vm.ram);
-            Printf.printSpecRam(0x0, 0x30F, vm.ram);
-            Printf.printLogOnBuffer("Press any key to close the application");
-            Console.ReadKey(); //serve per non far chiudere la console quando il programma finisce perché boh windows non dovrebbe esistere immagino e il suo terminale è spazzatura?
-                               //https://www.youtube.com/watch?v=hxM8QmyZXtg&t=11s per un po di funny sul terminale di windows
-            //Printf.printRam(vm.ram);
+           
         }
 
         public static void waitForClose(string log)
@@ -256,7 +248,7 @@ namespace Emulatore_Pdp8
         char printedPointer;
         //i16 pointedMemory;
         public u12 pointedAddress;
-        int pointedInt;
+        int BPlimit = 10;
         pdp8 vm;
 
         public Pointer(pdp8 newvm)
@@ -282,12 +274,36 @@ namespace Emulatore_Pdp8
             int one = isPositive ? 1 : -1;
             pointedAddress.setValue((ushort)(pointedAddress.getValue() + one));
         }
+
+        public void registerBreakPoint()
+        {
+            if(vm.breakPoints.Count >= BPlimit)
+            {
+                goto end;
+            }
+
+            //the one piece is real
+
+            if(vm.breakPoints.Contains(pointedAddress))
+            {
+                vm.breakPoints.Remove(pointedAddress);
+                goto end;
+            }
+
+            vm.breakPoints.Add(pointedAddress);
+            
+            end: //just committing war crimes
+                return;
+
+        }
     }
 
     class pdp8
     {
         public Pointer pointer;
         public List<u12> breakPoints; //breaking bad
+        public bool BPstop = false;
+
         //definizione contenuto della macchina e funzioni istruzioni
         public i16[] ram; //insieme di tutti i registri (eccetto quelli sotto)
         public i16 mbr; // memory buffer register
@@ -312,7 +328,6 @@ namespace Emulatore_Pdp8
         public pdp8() //ovviamente non prende parametri XD
         {
             this.breakPoints = new List<u12>();
-            //breakPoints.Add(new u12(0x0));
             this.ram = new i16[4096];
             this.mbr = new i16();
             this.a = new i16();
@@ -873,15 +888,23 @@ namespace Emulatore_Pdp8
             if (s == false)
                 s = true;
 
-            uint ount = 0; 
+            int sbsCounter = -1; 
+
+            if(Program.form.stepByStepIsEnabeld())
+            {
+                sbsCounter = 0;
+            }
+
             while (s) //fino a quando la macchina è accesa.
             {
                 Program.getVm().isRunning = true;
 
-                /*if(this.breakPoints.Contains(pc))
+                if(this.breakPoints.Contains(pc) && !BPstop)
                 {
+                    //this.pc.increment();
+                    BPstop = true;
                     break;
-                }*/
+                }
 
                 if(!f && !r)
                 {
@@ -907,6 +930,8 @@ namespace Emulatore_Pdp8
                     Program.form.safePrintStuff();
                 }
 
+                BPstop = false;
+
                 //print run info into buffer
                 
                 Printf.printRamOnBuffer(Program.getVm().ram, Compiler.getCompilerData().programAddress);
@@ -917,7 +942,18 @@ namespace Emulatore_Pdp8
                 //Program.getVm().isRunning = false;
                 //Printf.printLog(LOG);
                 //Program.inizializeVM();
+
+                if(sbsCounter != -1)
+                {
+                    if(sbsCounter == Program.form.nStepsValue - 1)
+                    {
+                        break;
+                    }
+                    sbsCounter++;
+                }
+
             }
+            sbsCounter = -1;
         }
     }
 }

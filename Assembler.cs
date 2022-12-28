@@ -453,7 +453,6 @@ namespace Assembler
 
     class Compiler
     {
-        //singleton CompilerData
         private static CompilerData compilerData;
 
         public static CompilerData getCompilerData()
@@ -470,6 +469,8 @@ namespace Assembler
             {
                 return;
             }
+
+            Program.inizializeVM();
 
             labelTabel = new Dictionary<string, u12>();
             labelKeys = new List<string>();
